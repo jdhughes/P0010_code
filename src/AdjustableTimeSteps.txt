@@ -1,0 +1,40 @@
+                   8-24-2010   AWH
+Changes to MF2005 main and GWF2BAS7 to accommodate the capability for
+Time Step Advance (AD) routines to adjust the number of time steps in
+a stress period.
+
+1.  In DIS data, allow the number of time steps (NSTP) to be negative
+for a stress period.  A negative value signifies that time steps are
+adjustable, with the maximum number of steps being the absolute value
+of NSTP.
+
+2.  A new global array, ISTPADJ(NPER), is created to indicate the use of
+adjustable time steps.  ISTPADJ is 0 for nonadjustable time steps, and
+NSTP is the number of time steps as usual.  ISTPADJ is 1 for adjustable
+time steps, and NSTP is the maximum number of time steps in the stress
+period.
+
+3.  Add variable LASTTS to Global data.  LASTTS is 1 for the last time
+step of a stress period and 0 for other time steps.  BAS7ST sets
+LASTTS=0.  BAS7AS sets LASTTS=1 when KSTP=NSTP.
+
+4.  In the main, add the statement
+
+     IF(LASTTS.NE.0) GO TO 100
+
+just before the end of the time step DO Loop.  This will allow VDF or
+other code to specify that a stress period ends before NSTP.
+
+5.  Output control has been modified to allow two new forms of the
+PERIOD n STEP n record.
+
+    PERIOD 0 STEP 0
+
+indicates that the output specified in subsequent records will occur
+every time step.
+
+    PERIOD n STEP 0
+
+indicates that output specified in subsequent records will occur at the
+end of stress period n.  The last time step is indicated by the LASTTS
+flag.
