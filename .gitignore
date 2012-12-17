@@ -13,3 +13,5 @@ local.properties
 lib
 /code/x64
 ipch
+*.user
+/code/UpgradeLog.XML
