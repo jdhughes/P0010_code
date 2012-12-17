@@ -1,4 +1,4 @@
-      SUBROUTINE UPCGLANCZOS(Nopt,Ntrd,Ntrdv,N,Nnz,Ia,Ja,AC,
+      SUBROUTINE PSOLLANCZOS(Nopt,Ntrd,Ntrdv,N,Nnz,Ia,Ja,AC,
      2                       Nsteps,N2,Vv,D_w,D_u,D,E,Ev)
         USE GLOBAL,   ONLY:IOUT
         IMPLICIT NONE
@@ -36,14 +36,14 @@ C     + + + LOCAL DEFINITIONS + + +
         DOUBLEPRECISION, PARAMETER :: done =1.0D0
 C     + + + FUNCTIONS + + +
         DOUBLEPRECISION :: DNRM2
-        DOUBLEPRECISION :: SUPCGDP
+        DOUBLEPRECISION :: SPSOLDP
 C     + + + CODE + + +
 C---------INITIALIZE Vv, D_w, D_u, D, E       
-        CALL SUPCGSETX(Nopt,Ntrdv,(Nsteps+1)*N2,Vv,dzero)
-        CALL SUPCGSETX(Nopt,Ntrdv,N,D_w,dzero)
-        CALL SUPCGSETX(Nopt,Ntrdv,N,D_u,dzero)
-        CALL SUPCGSETX(Nopt,Ntrdv,N,D,dzero)
-        CALL SUPCGSETX(Nopt,Ntrdv,N,E,dzero)
+        CALL SPSOLSETX(Nopt,Ntrdv,(Nsteps+1)*N2,Vv,dzero)
+        CALL SPSOLSETX(Nopt,Ntrdv,N,D_w,dzero)
+        CALL SPSOLSETX(Nopt,Ntrdv,N,D_u,dzero)
+        CALL SPSOLSETX(Nopt,Ntrdv,N,D,dzero)
+        CALL SPSOLSETX(Nopt,Ntrdv,N,E,dzero)
         
         seed(1) = 100
         CALL RANDOM_SEED (PUT = seed)
@@ -55,7 +55,7 @@ C---------INITIALIZE Vv, D_w, D_u, D, E
 C---------CALCULATE EUCLIDIAN NORM  
         t = DNRM2(N, VV(1), 1)
 !        CALL DSCAL(N, 1.0/t, Vv(1), 1)
-        CALL SUPCGDSCAL(Nopt, Ntrdv, N, 1.0/t, Vv(1))
+        CALL SPSOLDSCAL(Nopt, Ntrdv, N, 1.0/t, Vv(1))
         beta    = dzero
         orthtol = 1.0D-8
         wn      = dzero
@@ -66,22 +66,22 @@ C---------MAIN LOOP
 !        WRITE (*,*) 'LANCZOS ALG. BEGINS...'
         LANCZOSL: DO i = 1, Nsteps
           ipos = (i-1)*N2 + 1
-          CALL SUPCGMV(Nopt,Ntrd,Nnz,N,AC,Vv(ipos),D_w,Ia,Ja)
+          CALL SPSOLMV(Nopt,Ntrd,Nnz,N,AC,Vv(ipos),D_w,Ia,Ja)
           IF ( i.EQ.1 ) THEN
-            CALL SUPCGAXPY(Nopt,Ntrdv,N,-beta,Vv(ipos),D_w)
+            CALL SPSOLAXPY(Nopt,Ntrdv,N,-beta,Vv(ipos),D_w)
           ELSE
-            CALL SUPCGAXPY(Nopt,Ntrdv,N,-beta,Vv(ipos-N),D_w)
+            CALL SPSOLAXPY(Nopt,Ntrdv,N,-beta,Vv(ipos-N),D_w)
           END IF
-          alpha = SUPCGDP(Nopt,Ntrdv,N,D_w,Vv(ipos))
+          alpha = SPSOLDP(Nopt,Ntrdv,N,D_w,Vv(ipos))
           wn    = wn + alpha * alpha
           D(i)  = alpha
-          CALL SUPCGAXPY(Nopt,Ntrdv,N,-alpha,Vv(ipos),D_w)
+          CALL SPSOLAXPY(Nopt,Ntrdv,N,-alpha,Vv(ipos),D_w)
           ! U = V'*W
           CALL DGEMV('T',N,i,done,Vv,N2,D_w,1,dzero,D_u,1)
           ! W = V*U - W
           CALL DGEMV('N',N,i,-done,Vv,N2,D_u,1,done,D_w,1)
 
-          beta = SUPCGDP(Nopt,Ntrdv,N,D_w,D_w)
+          beta = SPSOLDP(Nopt,Ntrdv,N,D_w,D_w)
           IF ( beta*REAL(i,8).LT.orthtol*wn ) THEN
             EXIT LANCZOSL
           END IF
@@ -89,7 +89,7 @@ C---------MAIN LOOP
           beta = SQRT(beta);
           
           ipos2 = i*N2 + 1
-          CALL SUPCGAXPY(Nopt,Ntrdv,N,done/beta,D_w,Vv(ipos2))
+          CALL SPSOLAXPY(Nopt,Ntrdv,N,done/beta,D_w,Vv(ipos2))
 
           IF (i.LT.Nsteps) THEN
             E(i) = beta
@@ -115,4 +115,4 @@ C
 C
 C---------RETURN
         RETURN
-      END SUBROUTINE UPCGLANCZOS
+      END SUBROUTINE PSOLLANCZOS

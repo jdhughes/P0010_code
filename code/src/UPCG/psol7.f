@@ -1,4 +1,4 @@
-      MODULE UPCGMODULE
+      MODULE PSOLMODULE
         DOUBLEPRECISION, PARAMETER :: PI = 3.141592653589793
         DOUBLEPRECISION, DIMENSION(5) :: SCAL = 
      2    (/ 1.0D0, 0.1D0, 0.1D0, 0.1D0, 1.0D0 /)
@@ -22,16 +22,16 @@
           DOUBLEPRECISION, DIMENSION(:), ALLOCATABLE :: APPOL
           DOUBLEPRECISION, DIMENSION(:), ALLOCATABLE :: QPOL
         END TYPE TGLSPOLY
-        INTEGER,SAVE,POINTER  :: ITER1C,NPC,NOPT,NTRD,NTRDV
+        INTEGER,SAVE,POINTER  :: NMETH,ITER1C,NPC,NOPT,NTRD,NTRDV
         INTEGER,SAVE,POINTER  :: NITERC,NNZC,NIAC
         INTEGER,SAVE,POINTER  :: NIAPC,NIWC,NPOL,NEIG
-        REAL   ,SAVE,POINTER  :: HCLOSEUPCG,RCLOSEUPCG
-        DOUBLE PRECISION, SAVE, POINTER :: UPCGTOTT, UPCGFMAT
-        DOUBLE PRECISION, SAVE, POINTER :: UPCGPCUT, UPCGPCAT
-        DOUBLE PRECISION, SAVE, POINTER :: UPCGDPT, UPCGMVT
-        DOUBLE PRECISION, SAVE, POINTER :: UPCGAXPYT,UPCGVVPT,UPCGMISCT
-        DOUBLE PRECISION, SAVE, POINTER :: UPCGGPUTT
-        INTEGER,SAVE,POINTER  :: IUPCGO,IUPCGI
+        REAL   ,SAVE,POINTER  :: HCLOSEPSOL,RCLOSEPSOL
+        DOUBLE PRECISION, SAVE, POINTER :: PSOLTOTT, PSOLFMAT
+        DOUBLE PRECISION, SAVE, POINTER :: PSOLPCUT, PSOLPCAT
+        DOUBLE PRECISION, SAVE, POINTER :: PSOLDPT, PSOLMVT
+        DOUBLE PRECISION, SAVE, POINTER :: PSOLAXPYT,PSOLVVPT,PSOLMISCT
+        DOUBLE PRECISION, SAVE, POINTER :: PSOLGPUTT
+        INTEGER,SAVE,POINTER  :: IPSOLO,IPSOLI
         INTEGER,          SAVE, POINTER, DIMENSION(:,:,:) :: NODEC
         DOUBLE PRECISION, SAVE, POINTER, DIMENSION(:)     :: BC
         DOUBLE PRECISION, SAVE, POINTER, DIMENSION(:)     :: XC
@@ -53,26 +53,26 @@ C         DIAGONAL SCALING VECTOR
         DOUBLEPRECISION, SAVE, POINTER, DIMENSION(:)      :: SCLI
 C         POLYNOMIAL PRECONDITIONER        
         TYPE (TGLSPOLY),SAVE, POINTER :: GLSPOLY
-C         GPU POINTERS 
-        INTEGER(KIND=8), SAVE, POINTER  :: CU_HDL,CU_STAT,CU_DES
-        INTEGER(KIND=8), SAVE, POINTER  :: CU_IAC,CU_JAC
-        INTEGER(KIND=8), SAVE, POINTER  :: CU_AC,CU_APC,CU_XC
-        INTEGER(KIND=8), SAVE, POINTER  :: CU_DC,CU_ZC,CU_PC,CU_QC
-        INTEGER(KIND=8), SAVE, POINTER  :: CU_SCL,CU_SCLI
-        INTEGER(KIND=8), SAVE, POINTER  :: CU_V,CU_V0,CU_V1
-        INTEGER(KIND=8), SAVE, POINTER  :: PL_DC,PL_ZC
-
-      TYPE UPCGTYPE
-        INTEGER,POINTER  :: ITER1C,NPC,NOPT,NTRD,NTRDV
+!C         GPU POINTERS 
+!        INTEGER(KIND=8), SAVE, POINTER  :: CU_HDL,CU_STAT,CU_DES
+!        INTEGER(KIND=8), SAVE, POINTER  :: CU_IAC,CU_JAC
+!        INTEGER(KIND=8), SAVE, POINTER  :: CU_AC,CU_APC,CU_XC
+!        INTEGER(KIND=8), SAVE, POINTER  :: CU_DC,CU_ZC,CU_PC,CU_QC
+!        INTEGER(KIND=8), SAVE, POINTER  :: CU_SCL,CU_SCLI
+!        INTEGER(KIND=8), SAVE, POINTER  :: CU_V,CU_V0,CU_V1
+!        INTEGER(KIND=8), SAVE, POINTER  :: PL_DC,PL_ZC
+!
+      TYPE PSOLTYPE
+        INTEGER,POINTER  :: NMETH,ITER1C,NPC,NOPT,NTRD,NTRDV
         INTEGER,POINTER  :: NITERC,NNZC,NIAC
         INTEGER,POINTER  :: NIAPC,NIWC,NPOL,NEIG
-        REAL   ,POINTER  :: HCLOSEUPCG,RCLOSEUPCG
-        DOUBLE PRECISION, POINTER :: UPCGTOTT, UPCGFMAT
-        DOUBLE PRECISION, POINTER :: UPCGPCUT, UPCGPCAT
-        DOUBLE PRECISION, POINTER :: UPCGDPT, UPCGMVT
-        DOUBLE PRECISION, POINTER :: UPCGAXPYT,UPCGVVPT,UPCGMISCT
-        DOUBLE PRECISION, POINTER :: UPCGGPUTT
-        INTEGER,POINTER  :: IUPCGO,IUPCGI
+        REAL   ,POINTER  :: HCLOSEPSOL,RCLOSEPSOL
+        DOUBLE PRECISION, POINTER :: PSOLTOTT, PSOLFMAT
+        DOUBLE PRECISION, POINTER :: PSOLPCUT, PSOLPCAT
+        DOUBLE PRECISION, POINTER :: PSOLDPT, PSOLMVT
+        DOUBLE PRECISION, POINTER :: PSOLAXPYT,PSOLVVPT,PSOLMISCT
+        DOUBLE PRECISION, POINTER :: PSOLGPUTT
+        INTEGER,POINTER  :: IPSOLO,IPSOLI
         INTEGER,          POINTER, DIMENSION(:,:,:) :: NODEC
         DOUBLE PRECISION, POINTER, DIMENSION(:)     :: BC
         DOUBLE PRECISION, POINTER, DIMENSION(:)     :: XC
@@ -94,33 +94,33 @@ C         DIAGONAL SCALING VECTOR
         DOUBLEPRECISION, POINTER, DIMENSION(:)      :: SCLI
 C         POLYNOMIAL PRECONDITIONER        
         TYPE (TGLSPOLY),POINTER :: GLSPOLY
-C         GPU POINTERS 
-        INTEGER(KIND=8),POINTER  :: CU_HDL,CU_STAT,CU_DES
-        INTEGER(KIND=8),POINTER  :: CU_IAC,CU_JAC
-        INTEGER(KIND=8),POINTER  :: CU_AC,CU_APC,CU_XC
-        INTEGER(KIND=8),POINTER  :: CU_DC,CU_ZC,CU_PC,CU_QC
-        INTEGER(KIND=8),POINTER  :: CU_SCL,CU_SCLI
-        INTEGER(KIND=8),POINTER  :: CU_V,CU_V0,CU_V1
-        INTEGER(KIND=8),POINTER  :: PL_DC,PL_ZC
+!C         GPU POINTERS 
+!        INTEGER(KIND=8),POINTER  :: CU_HDL,CU_STAT,CU_DES
+!        INTEGER(KIND=8),POINTER  :: CU_IAC,CU_JAC
+!        INTEGER(KIND=8),POINTER  :: CU_AC,CU_APC,CU_XC
+!        INTEGER(KIND=8),POINTER  :: CU_DC,CU_ZC,CU_PC,CU_QC
+!        INTEGER(KIND=8),POINTER  :: CU_SCL,CU_SCLI
+!        INTEGER(KIND=8),POINTER  :: CU_V,CU_V0,CU_V1
+!        INTEGER(KIND=8),POINTER  :: PL_DC,PL_ZC
       END TYPE
-      TYPE(UPCGTYPE), SAVE ::UPCGDAT(10)
+      TYPE(PSOLTYPE), SAVE ::PSOLDAT(10)
       DOUBLEPRECISION, POINTER :: DTDP
       DOUBLEPRECISION, POINTER :: DTMV
       DOUBLEPRECISION, POINTER :: DTAXPY
       DOUBLEPRECISION, POINTER :: DTVVP
       DOUBLEPRECISION, POINTER :: DTMISC
-      END MODULE UPCGMODULE
+      END MODULE PSOLMODULE
 
 
-      SUBROUTINE UPCG7AR(IN,MXITER,IGRID)
+      SUBROUTINE PSOL7AR(IN,MXITER,IGRID)
 C     ******************************************************************
-C     ALLOCATE STORAGE FOR UPCG ARRAYS AND READ UPCG DATA
+C     ALLOCATE STORAGE FOR PSOL ARRAYS AND READ PSOL DATA
 C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
       USE GLOBAL,   ONLY:IOUT,NCOL,NROW,NLAY,IBOUND
-      USE UPCGMODULE
+      USE PSOLMODULE
       USE OMP_LIB 
 C
       CHARACTER*200 LINE
@@ -131,18 +131,18 @@ C
       DOUBLEPRECISION :: tserialmv, tompmv, ttmv, sumv
 C
 C-------FUNCTIONS      
-      DOUBLEPRECISION :: SUPCGDP
+      DOUBLEPRECISION :: SPSOLDP
 C     ------------------------------------------------------------------
-      ALLOCATE( ITER1C,NPC,NOPT,NTRD,NTRDV )
+      ALLOCATE( NMETH,ITER1C,NPC,NOPT,NTRD,NTRDV )
       ALLOCATE( NITERC,NNZC,NIAC,NIAPC,NIWC )
       ALLOCATE( NPOL,NEIG )
-      ALLOCATE( HCLOSEUPCG, RCLOSEUPCG )
-      ALLOCATE( UPCGTOTT, UPCGFMAT )
-      ALLOCATE( UPCGPCUT, UPCGPCAT, UPCGDPT, UPCGMVT )
-      ALLOCATE( UPCGAXPYT, UPCGVVPT, UPCGMISCT )
-      ALLOCATE( UPCGGPUTT )
+      ALLOCATE( HCLOSEPSOL, RCLOSEPSOL )
+      ALLOCATE( PSOLTOTT, PSOLFMAT )
+      ALLOCATE( PSOLPCUT, PSOLPCAT, PSOLDPT, PSOLMVT )
+      ALLOCATE( PSOLAXPYT, PSOLVVPT, PSOLMISCT )
+      ALLOCATE( PSOLGPUTT )
 
-      ALLOCATE( IUPCGO, IUPCGI )
+      ALLOCATE( IPSOLO, IPSOLI )
       ALLOCATE( GLSPOLY )
       ALLOCATE( DTDP, DTMV, DTAXPY, DTVVP, DTMISC )
       
@@ -152,71 +152,80 @@ C     ------------------------------------------------------------------
       NODESC = NCOL*NROW*NLAY
       NODEC = 0
       
-      UPCGTOTT   = 0.0D0
-      UPCGFMAT   = 0.0D0
-      UPCGPCUT   = 0.0D0
-      UPCGPCAT   = 0.0D0
-      UPCGDPT    = 0.0D0
-      UPCGMVT    = 0.0D0
-      UPCGAXPYT  = 0.0D0
-      UPCGVVPT   = 0.0D0
-      UPCGMISCT  = 0.0D0
-      UPCGGPUTT  = 0.0D0
-      IUPCGO     = 0
-      IUPCGI     = 0
+      PSOLTOTT   = 0.0D0
+      PSOLFMAT   = 0.0D0
+      PSOLPCUT   = 0.0D0
+      PSOLPCAT   = 0.0D0
+      PSOLDPT    = 0.0D0
+      PSOLMVT    = 0.0D0
+      PSOLAXPYT  = 0.0D0
+      PSOLVVPT   = 0.0D0
+      PSOLMISCT  = 0.0D0
+      PSOLGPUTT  = 0.0D0
+      IPSOLO     = 0
+      IPSOLI     = 0
       DTDP       = 0.0D0
       DTMV       = 0.0D0
       DTAXPY     = 0.0D0
       DTVVP      = 0.0D0
       DTMISC     = 0.0D0
       
+      NPC        = 0
       ISCL       = 0
 C
-C-------PRINT A MESSAGE IDENTIFYING UPCG PACKAGE
+C-------PRINT A MESSAGE IDENTIFYING PSOL PACKAGE
       WRITE (IOUT,500)
-  500 FORMAT (1X,/1X,'UPCG -- UNSTRUCTURED CONJUGATE-GRADIENT SOLUTION',
+  500 FORMAT (1X,/1X,'PSOL -- UNSTRUCTURED CONJUGATE-GRADIENT SOLUTION',
      &        ' PACKAGE, VERSION 7.01, 02/09/2012',
      &        /1X,8X,'INCLUDES CPU, CPU-OPENMP, AND GPU-CUDA SUPPORT')
 C
 C-------READ AND PRINT COMMENTS, MXITER,ITER1 AND NPCOND
       CALL URDCOM(IN,IOUT,LINE)
       LLOC=1
-      CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,MXITER,R,IOUT,IN)
-      CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,ITER1C,R,IOUT,IN)
-      CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,NPC,R,IOUT,IN)
-      CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,NOPT,R,IOUT,IN)
-      IF ( NPC.LT.0 ) THEN
-        NPC  = ABS( NPC )
-        ISCL = 1
+      CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,NMETH,R,IOUT,IN)
+      IF ( NMETH.NE.1 ) THEN
+          CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,MXITER,R,IOUT,IN)
+          CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,ITER1C,R,IOUT,IN)
+          CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,NPC,R,IOUT,IN)
       END IF
-      IF ( NPC.LT.0 .OR. NPC.GT.4 ) THEN
-          WRITE (IOUT,'(//,A)') 'UPCG7AR: NPC MUST BE >= 0 AND < 5'
-          CALL USTOP('UPCG7AR: NPC MUST BE >= 0 AND < 5')
+      CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,NOPT,R,IOUT,IN)
+      IF ( NMETH.NE.1 ) THEN
+          IF ( NPC.LT.0 ) THEN
+            NPC  = ABS( NPC )
+            ISCL = 1
+          END IF
+          IF ( NPC.LT.0 .OR. NPC.GT.4 ) THEN
+              WRITE (IOUT,'(//,A)') 'PSOL7AR: NPC MUST BE >= 0 AND < 5'
+              CALL USTOP('PSOL7AR: NPC MUST BE >= 0 AND < 5')
+          END IF
+          IF ( NPC.EQ.4 ) THEN
+            ISCL = 1
+            CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,N,R,IOUT,IN)
+            GLSPOLY%NDEGREE  = N
+            IF ( N.LT.1 ) THEN
+              WRITE (IOUT,'(//,A)') 
+     2          'PSOL7AR: POLYNOMIAL DEGREE MUST BE > 0'
+              CALL USTOP('PSOL7AR: POLYNOMIAL DEGREE MUST BE > 0')
+            END IF
+            CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,N,R,IOUT,IN)
+            GLSPOLY%NLANSTEP = N
+            GLSPOLY%IEIGCALC = 1
+            IF ( N.EQ.-2 ) THEN
+              N = ABS( N )
+              GLSPOLY%IEIGCALC = 0
+              GLSPOLY%NLANSTEP = 0
+            END IF
+            IF ( N.LT.0 ) THEN
+              WRITE (IOUT,'(//,A)') 
+     2          'PSOL7AR: NLANSTEP MUST BE > 0 OR = -2'
+              CALL USTOP('PSOL7AR: POLYNOMIAL NLANSTEP MUST BE > 0 '
+     2                   //'OR = -2')
+            END IF
+          END IF
       END IF
       IF ( NOPT.LT.1 .OR. NOPT.GT.3 ) THEN
-          WRITE (IOUT,'(//,A)') 'UPCG7AR: NOPT MUST BE > 0 AND < 4'
-          CALL USTOP('UPCG7AR: NOPT MUST BE > 0 AND < 4')
-      END IF
-      IF ( NPC.EQ.4 ) THEN
-        ISCL = 1
-        CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,N,R,IOUT,IN)
-        GLSPOLY%NDEGREE  = N
-        IF ( N.LT.1 ) THEN
-          WRITE (IOUT,'(//,A)') 'UPCG7AR: POLYNOMIAL DEGREE MUST BE > 0'
-          CALL USTOP('UPCG7AR: POLYNOMIAL DEGREE MUST BE > 0')
-        END IF
-        CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,N,R,IOUT,IN)
-        GLSPOLY%NLANSTEP = N
-        GLSPOLY%IEIGCALC = 1
-        IF ( N.EQ.-2 ) THEN
-          N = ABS( N )
-          GLSPOLY%IEIGCALC = 0
-          GLSPOLY%NLANSTEP = 0
-        END IF
-        IF ( N.LT.0 ) THEN
-          WRITE (IOUT,'(//,A)') 'UPCG7AR: NLANSTEP MUST BE > 0 OR = -2'
-          CALL USTOP('UPCG7AR: POLYNOMIAL NLANSTEP MUST BE > 0 OR = -2')
-        END IF
+          WRITE (IOUT,'(//,A)') 'PSOL7AR: NOPT MUST BE > 0 AND < 4'
+          CALL USTOP('PSOL7AR: NOPT MUST BE > 0 AND < 4')
       END IF
       NTRD  = 1
       NTRDV = 1
@@ -225,8 +234,8 @@ C-------READ AND PRINT COMMENTS, MXITER,ITER1 AND NPCOND
         IF ( NTRD.LT.0 ) THEN
           CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,NTRDV,R,-IOUT,IN)
           IF ( NTRDV.LT.1 ) THEN
-              WRITE (IOUT,'(//,A)') 'UPCG7AR: NTRDV MUST BE > 0'
-              CALL USTOP('UPCG7AR: NTRDV MUST BE > 0')
+              WRITE (IOUT,'(//,A)') 'PSOL7AR: NTRDV MUST BE > 0'
+              CALL USTOP('PSOL7AR: NTRDV MUST BE > 0')
           END IF
         END IF
       END IF
@@ -234,32 +243,42 @@ C
 C-------READ HCLOSEPCG,RCLOSEPCG,RELAXPCG,NBPOL,IPRPCG,MUTPCG
       CALL URDCOM(IN,IOUT,LINE)
       LLOC=1
-      CALL URWORD(LINE,LLOC,ISTART,ISTOP,3,I,HCLOSEUPCG,IOUT,IN)
-      CALL URWORD(LINE,LLOC,ISTART,ISTOP,3,I,RCLOSEUPCG,IOUT,IN)
-      IF ( HCLOSEUPCG.LE.0.0 ) THEN
-          WRITE (IOUT,'(//,A)') 'UPCG7AR: HCLOSE MUST BE > 0.0'
-          CALL USTOP('UPCG7AR: HCLOSE MUST BE > 0.0')
+      CALL URWORD(LINE,LLOC,ISTART,ISTOP,3,I,HCLOSEPSOL,IOUT,IN)
+      IF ( HCLOSEPSOL.LE.0.0 ) THEN
+          WRITE (IOUT,'(//,A)') 'PSOL7AR: HCLOSE MUST BE > 0.0'
+          CALL USTOP('PSOL7AR: HCLOSE MUST BE > 0.0')
       END IF
-      IF ( RCLOSEUPCG.LE.0.0 ) THEN
-          WRITE (IOUT,'(//,A)') 'UPCG7AR: RCLOSE MUST BE > 0.0'
-          CALL USTOP('UPCG7AR: RCLOSE MUST BE > 0.0')
-      END IF
+      IF ( NMETH.NE.1 ) THEN
+		CALL URWORD(LINE,LLOC,ISTART,ISTOP,3,I,RCLOSEPSOL,IOUT,IN)
+		IF ( RCLOSEPSOL.LE.0.0 ) THEN
+			WRITE (IOUT,'(//,A)') 'PSOL7AR: RCLOSE MUST BE > 0.0'
+			CALL USTOP('PSOL7AR: RCLOSE MUST BE > 0.0')
+          END IF
+	END IF
 C
 C-------PRINT MXITER,ITER1C,NPC,HCLOSEPCG,RCLOSEPCG,NPC,NOPT
 C-------MUTPCG,DAMPPCG
-        WRITE (IOUT,505)
-  505   FORMAT (1X,/,18X,'SOLUTION BY THE CONJUGATE-GRADIENT METHOD',
-     &        /,1X,75('-'))
-      WRITE (IOUT,510) MXITER
+	IF ( NMETH.NE.1 ) THEN
+		WRITE (IOUT,505)
+	    WRITE (IOUT,510) MXITER
+	    WRITE (IOUT,515) ITER1C
+		WRITE (IOUT,520) NPC
+		WRITE (IOUT,525) RCLOSEPSOL
+	ELSE
+		WRITE (IOUT,530)
+	END IF
+  505	FORMAT (1X,/,18X,'SOLUTION BY THE CONJUGATE-GRADIENT METHOD',
+     &               /,1X,75('-'))
   510 FORMAT (1X,1X,'MAXIMUM NUMBER OF CALLS TO PCG ROUTINE =',I9)
-      WRITE (IOUT,515) ITER1C
   515 FORMAT (1X,5X,'MAXIMUM ITERATIONS PER CALL TO PCG =',I9)
-      WRITE (IOUT,520) NPC
   520 FORMAT (1X,12X,'MATRIX PRECONDITIONING TYPE =',I9)
-      WRITE (IOUT,535) HCLOSEUPCG
-  535 FORMAT (1X,6X,'HEAD CHANGE CRITERION FOR CLOSURE =',E15.5)
-      WRITE (IOUT,540) RCLOSEUPCG
-  540 FORMAT (1X,2X,'RESIDUAL CHANGE CRITERION FOR CLOSURE =',E15.5)
+  525 FORMAT (1X,2X,'RESIDUAL CHANGE CRITERION FOR CLOSURE =',E15.5)
+  530	FORMAT (1X,/,18X,'EXPLICIT SOLUTION WITH CONVERGENCE CONTROL',
+     &               /,1X,75('-'))
+      
+C-------
+  	WRITE (IOUT,540) HCLOSEPSOL
+  540 FORMAT (1X,6X,'HEAD CHANGE CRITERION FOR CLOSURE =',E15.5)
 C
       WRITE (IOUT,545) NPC, NOPT
   545 FORMAT (/1X,75('-'),/,
@@ -339,7 +358,7 @@ C       COEFFICIENT MATRIX AND PRECONDITIONER MATRIX
       END IF
       ALLOCATE(APC(NIAPC))
       ALLOCATE(IAC(NIAC+1),JAC(NNZC),IUC(NIAC),IXMAP(NIAC))
-C       ALLOCATE WORKING VECTORS FOR UPCG SOLVER      
+C       ALLOCATE WORKING VECTORS FOR PSOL SOLVER      
       ALLOCATE(BC(NIAC),XC(NIAC))
       ALLOCATE(DC(NIAC),PC(NIAC))
       ALLOCATE(QC(NIAC),ZC(NIAC))
@@ -580,7 +599,7 @@ C           VECTOR COPY OPERATIONS
 C           SERIAL
           DTMISC = 0.0D0
           DO i = 1, nop
-            CALL SUPCGDCOPY(1,NTRDV,NIAC,DC,ZC)
+            CALL SPSOLDCOPY(1,NTRDV,NIAC,DC,ZC)
           END DO
           tserialc = DTMISC
 C           OPENMP
@@ -591,7 +610,7 @@ C           OPENMP
             DTMISC = 0.0D0
             ttc    = 0.0D0
             DO i = 1, nop
-              CALL SUPCGDCOPY(NOPT,np,NIAC,DC,ZC)
+              CALL SPSOLDCOPY(NOPT,np,NIAC,DC,ZC)
             END DO
             ttc    = DTMISC
             IF ( ttc.LT.tserialc .AND.
@@ -610,7 +629,7 @@ C           DOT PRODUCT
 C           SERIAL
           DTDP = 0.0D0
           DO i = 1, nop
-            v = SUPCGDP(1,NTRDV,NIAC,DC,ZC)
+            v = SPSOLDP(1,NTRDV,NIAC,DC,ZC)
           END DO
           tserialdp = DTDP
 C           OPENMP
@@ -621,7 +640,7 @@ C           OPENMP
            DTDP = 0.0D0
             ttdp = 0.0D0
             DO i = 1, nop
-              v = SUPCGDP(NOPT,np,NIAC,DC,ZC)
+              v = SPSOLDP(NOPT,np,NIAC,DC,ZC)
             END DO
             ttdp    = DTDP
             IF ( ttdp.LT.tserialdp .AND.
@@ -640,7 +659,7 @@ C           SPARSE MATRIX VECTOR PRODUCT
 C           SERIAL
           DTMV = 0.0D0
           DO i = 1, nop
-            CALL SUPCGMV(1,NTRD,NNZC,NIAC,AC,DC,ZC,IAC,JAC)
+            CALL SPSOLMV(1,NTRD,NNZC,NIAC,AC,DC,ZC,IAC,JAC)
           END DO
           tserialmv = DTMV
 C           OPENMP
@@ -651,7 +670,7 @@ C           OPENMP
             DTMV = 0.0D0
             ttmv = 0.0D0
               DO i = 1, nop
-                CALL SUPCGMV(NOPT,np,NNZC,NIAC,AC,DC,ZC,IAC,JAC)
+                CALL SPSOLMV(NOPT,np,NNZC,NIAC,AC,DC,ZC,IAC,JAC)
               END DO
             ttmv    = DTMV
             IF ( ttmv.LT.tserialmv .AND.
@@ -709,53 +728,53 @@ C
      &        /19X,' NUMBER OF OPENMP SMV THREADS :',I5,
      &        /1X,75('-'))
 
-C
-C-------ALLOCATE GPU POINTERS
-      ALLOCATE(CU_HDL,CU_STAT,CU_DES)
-      ALLOCATE(CU_IAC,CU_JAC)
-      ALLOCATE(CU_AC,CU_APC,CU_XC)
-      ALLOCATE(CU_DC,CU_ZC,CU_PC,CU_QC)
-      ALLOCATE(CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1)
-      ALLOCATE(PL_DC,PL_ZC)
-C
-C-------INITIALIZE GPU MEMORY
-      IF ( NOPT.EQ.3 ) THEN
-C         INITIALIZE MEMORY ON THE GPU 
-        CALL UPCGC7_INIT(CU_HDL,CU_STAT,CU_DES,
-     &                   NNZC,NIAC,NIAPC,
-     &                   NPC,GLSPOLY%NDEGREE,
-     &                   CU_IAC,IAC,CU_JAC,JAC,
-     &                   CU_AC,CU_APC,CU_XC,
-     &                   CU_DC,CU_ZC,CU_PC,CU_QC,
-     &                   CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1,
-     &                   PL_DC,PL_ZC)      
-      END IF
-C
+!C
+!C-------ALLOCATE GPU POINTERS
+!      ALLOCATE(CU_HDL,CU_STAT,CU_DES)
+!      ALLOCATE(CU_IAC,CU_JAC)
+!      ALLOCATE(CU_AC,CU_APC,CU_XC)
+!      ALLOCATE(CU_DC,CU_ZC,CU_PC,CU_QC)
+!      ALLOCATE(CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1)
+!      ALLOCATE(PL_DC,PL_ZC)
+!C
+!C-------INITIALIZE GPU MEMORY
+!      IF ( NOPT.EQ.3 ) THEN
+!C         INITIALIZE MEMORY ON THE GPU 
+!        CALL PSOLC7_INIT(CU_HDL,CU_STAT,CU_DES,
+!     &                   NNZC,NIAC,NIAPC,
+!     &                   NPC,GLSPOLY%NDEGREE,
+!     &                   CU_IAC,IAC,CU_JAC,JAC,
+!     &                   CU_AC,CU_APC,CU_XC,
+!     &                   CU_DC,CU_ZC,CU_PC,CU_QC,
+!     &                   CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1,
+!     &                   PL_DC,PL_ZC)      
+!      END IF
+!C
 C-------SET POINTERS FOR GRID
-      CALL UPCG7PSV(IGRID)
+      CALL PSOL7PSV(IGRID)
 C
 C-------RETURN
       RETURN
-      END SUBROUTINE UPCG7AR
+      END SUBROUTINE PSOL7AR
       
-      SUBROUTINE UPCG7AP(HNEW,IBOUND,CR,CC,CV,HCOF,RHS,
+      SUBROUTINE PSOL7AP(HNEW,IBOUND,CR,CC,CV,HCOF,RHS,
      &                 ICNVG,KSTP,KPER,MXITER,KITER,
      &                 NCOL,NROW,NLAY,NODES,HNOFLO,IOUT,
-     &                 NPC,NOPT,NTRD,NTRDV,NITER,ITER1,NNZC,NIAC,
+     &                 NMETH,NPC,NOPT,NTRD,NTRDV,NITER,ITER1,NNZC,NIAC,
      &                 NIAPC,NIWC,NPOL,NEIG,
      &                 HCLOSE,RCLOSE,
-     &                 UPCGTOTT,UPCGFMAT,
-     &                 UPCGPCUT,UPCGPCAT,UPCGDPT,UPCGMVT,
-     &                 UPCGAXPYT,UPCGVVPT,UPCGMISCT,UPCGGPUTT,
-     &                 IUPCGO,IUPCGI,
+     &                 PSOLTOTT,PSOLFMAT,
+     &                 PSOLPCUT,PSOLPCAT,PSOLDPT,PSOLMVT,
+     &                 PSOLAXPYT,PSOLVVPT,PSOLMISCT,PSOLGPUTT,
+     &                 IPSOLO,IPSOLI,
      &                 NODEC,BC,XC,AC,APC,IAC,JAC,IUC,IXMAP,IWC,
-     &                 DC,ZC,PC,QC,ISCL,SCL,SCLI,GLSPOLY,
-     &                 CU_HDL,CU_STAT,CU_DES,CU_JAC,CU_IAC,
-     &                 CU_AC,CU_APC,CU_XC,
-     &                 CU_DC,CU_ZC,CU_PC,CU_QC,
-     &                 CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1,
-     &                 PL_DC,PL_ZC)
-C
+     &                 DC,ZC,PC,QC,ISCL,SCL,SCLI,GLSPOLY) !,
+!     &                 CU_HDL,CU_STAT,CU_DES,CU_JAC,CU_IAC,
+!     &                 CU_AC,CU_APC,CU_XC,
+!     &                 CU_DC,CU_ZC,CU_PC,CU_QC,
+!     &                 CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1,
+!     &                 PL_DC,PL_ZC)
+!C
 C     ******************************************************************
 C     SOLUTION BY THE CONJUGATE GRADIENT METHOD -
 C                                          UP TO ITER1 ITERATIONS
@@ -763,7 +782,7 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
-      USE UPCGMODULE, ONLY: TGLSPOLY, 
+      USE PSOLMODULE, ONLY: TGLSPOLY, 
      2                      DTDP, DTMV, DTAXPY, DTVVP, DTMISC
       IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
@@ -785,6 +804,7 @@ C     + + + DUMMY ARGUMENTS + + +
       INTEGER, INTENT(IN)                              :: NODES
       REAL, INTENT(IN)                                 :: HNOFLO
       INTEGER, INTENT(IN)                              :: IOUT
+      INTEGER, INTENT(IN)                              :: NMETH
       INTEGER, INTENT(IN)                              :: NPC
       INTEGER, INTENT(IN)                              :: NOPT
       INTEGER, INTENT(IN)                              :: NTRD
@@ -799,18 +819,18 @@ C     + + + DUMMY ARGUMENTS + + +
       INTEGER, INTENT(IN)                              :: NEIG
       REAL, INTENT(IN)                                 :: HCLOSE
       REAL, INTENT(IN)                                 :: RCLOSE
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGTOTT
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGFMAT
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGPCUT
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGPCAT
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGDPT
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGMVT
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGAXPYT
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGGPUTT
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGVVPT
-      DOUBLEPRECISION, INTENT(INOUT)                   :: UPCGMISCT
-      INTEGER, INTENT(INOUT)                           :: IUPCGO
-      INTEGER, INTENT(INOUT)                           :: IUPCGI
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLTOTT
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLFMAT
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLPCUT
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLPCAT
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLDPT
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLMVT
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLAXPYT
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLGPUTT
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLVVPT
+      DOUBLEPRECISION, INTENT(INOUT)                   :: PSOLMISCT
+      INTEGER, INTENT(INOUT)                           :: IPSOLO
+      INTEGER, INTENT(INOUT)                           :: IPSOLI
       INTEGER, DIMENSION(NCOL,NROW,NLAY)               :: NODEC
       DOUBLEPRECISION, DIMENSION(NIAC), INTENT(INOUT)  :: BC
       DOUBLEPRECISION, DIMENSION(NIAC), INTENT(INOUT)  :: XC
@@ -832,27 +852,27 @@ C       DIAGONAL SCALING VECTOR
       DOUBLEPRECISION, DIMENSION(NIAC), INTENT(INOUT)  :: SCLI
 C       POLYNOMIAL PRECONDITIONER
       TYPE (TGLSPOLY), INTENT(INOUT)                   :: GLSPOLY
-C     GPU VARIABLES      
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_HDL
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_STAT
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_DES
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_JAC
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_IAC
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_AC
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_APC      
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_XC
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_DC
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_ZC
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_PC
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_QC
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_SCL    
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_SCLI    
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_V      
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_V0      
-      INTEGER(KIND=8),                    INTENT(IN)   :: CU_V1
-      INTEGER(KIND=8),                    INTENT(IN)   :: PL_DC
-      INTEGER(KIND=8),                    INTENT(IN)   :: PL_ZC
-C     + + + LOCAL DEFINITIONS + + +
+!C     GPU VARIABLES      
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_HDL
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_STAT
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_DES
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_JAC
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_IAC
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_AC
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_APC      
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_XC
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_DC
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_ZC
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_PC
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_QC
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_SCL    
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_SCLI    
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_V      
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_V0      
+!      INTEGER(KIND=8),                    INTENT(IN)   :: CU_V1
+!      INTEGER(KIND=8),                    INTENT(IN)   :: PL_DC
+!      INTEGER(KIND=8),                    INTENT(IN)   :: PL_ZC
+!C     + + + LOCAL DEFINITIONS + + +
       DOUBLEPRECISION, PARAMETER :: DZERO = 0.0D0
       DOUBLEPRECISION, PARAMETER :: DONE  = 1.0D0
       INTEGER :: i, j, k, n
@@ -891,23 +911,23 @@ C       GPU LOCALS DEFINITIONS
       DOUBLEPRECISION :: cu_rho, cu_rho0        
 
 C       FUNCTIONS      
-      DOUBLEPRECISION :: SUPCGDP
+      DOUBLEPRECISION :: SPSOLDP
 C
 C-------CODE
 C
-C-------START UPCG TOTAL TIMER
-      CALL SUPCGTIMER(0,tt1,UPCGTOTT)
+C-------START PSOL TOTAL TIMER
+      CALL SPSOLTIMER(0,tt1,PSOLTOTT)
 C
 C       SET TEMPORARY TIMER VARIABLES TO CURRENT VALUE OF 
 C       DUMMY ARGUMENT TIMER VARIABLES
-      DTDP   = UPCGDPT
-      DTMV   = UPCGMVT
-      DTAXPY = UPCGAXPYT
-      DTVVP  = UPCGVVPT
-      DTMISC = UPCGMISCT
+      DTDP   = PSOLDPT
+      DTMV   = PSOLMVT
+      DTAXPY = PSOLAXPYT
+      DTVVP  = PSOLVVPT
+      DTMISC = PSOLMISCT
 C
 C-------START FORMULATE TIMER
-      CALL SUPCGTIMER(0,ttf,UPCGFMAT)
+      CALL SPSOLTIMER(0,ttf,PSOLFMAT)
 C
 C       SET LOCAL VARIABLES
       nrc     = NROW * NCOL
@@ -1118,22 +1138,22 @@ C-------------END IBOUND(N) .GT. 0
       END DO LFILL
 C
 C-------END FORMULATE TIMER
-      CALL SUPCGTIMER(1,ttf,UPCGFMAT)
+      CALL SPSOLTIMER(1,ttf,PSOLFMAT)
 C
-C-------UPDATE UPCG OUTER ITERATION COUNTER
-      IUPCGO = IUPCGO + 1
+C-------UPDATE PSOL OUTER ITERATION COUNTER
+      IPSOLO = IPSOLO + 1
 C
 C-------UPDATE PRECONDITIONER
-      CALL SUPCGTIMER(0,tpcu1,UPCGPCUT)
+      CALL SPSOLTIMER(0,tpcu1,PSOLPCUT)
 C       SCALE MATRIX FOR POLYNOMIAL PRECONDITIONER
 !      IF ( NPC.EQ.4 ) THEN
       IF ( ISCL.NE.0 ) THEN
-        CALL SUPCGSCL(1,NNZC,NIAC,AC,XC,BC,SCL,SCLI,IAC,JAC)
+        CALL SPSOLSCL(1,NNZC,NIAC,AC,XC,BC,SCL,SCLI,IAC,JAC)
       END IF
-      CALL SUPCGPCU(NOPT,NTRD,NTRDV,NNZC,NIAC,NIAPC,NIWC,NPC,
+      CALL SPSOLPCU(NOPT,NTRD,NTRDV,NNZC,NIAC,NIAPC,NIWC,NPC,
      2              AC,APC,IAC,JAC,IUC,IWC,
      3              GLSPOLY)
-      CALL SUPCGTIMER(1,tpcu1,UPCGPCUT)
+      CALL SPSOLTIMER(1,tpcu1,PSOLPCUT)
 C
 C-------WRITE SUMMARY OF INITIAL EIGENVALUES FOR
 C       THE POLYNOMIAL PRECONDITIONER
@@ -1167,7 +1187,7 @@ C-------INITIALIZE SOLUTION VARIABLE AND ARRAYS
         ZC(n) = DZERO
       END DO
 C-------CALCULATE INITIAL RESIDUAL
-      CALL SUPCGMV(NOPT,NTRD,NNZC,NIAC,AC,XC,DC,IAC,JAC)
+      CALL SPSOLMV(NOPT,NTRD,NNZC,NIAC,AC,XC,DC,IAC,JAC)
       DO n = 1, NIAC
         t     = DC(n)
         DC(n) = BC(n) - t
@@ -1176,10 +1196,10 @@ C       CPU
       CPUGPUT: IF ( NOPT.EQ.1 .OR. NOPT.EQ.2 ) THEN
 C---------INNER ITERATION          
         INNER: DO iiter = 1, NITER
-           IUPCGI = IUPCGI + 1
+           IPSOLI = IPSOLI + 1
            ITER1  = ITER1  + 1
 C-----------APPLY PRECONDITIONER
-          CALL SUPCGTIMER(0,tpca1,UPCGPCAT)
+          CALL SPSOLTIMER(0,tpca1,PSOLPCAT)
           SELECT CASE (NPC)
 C             NO PRECONDITIONER
             CASE (0)
@@ -1188,19 +1208,19 @@ C             NO PRECONDITIONER
               END DO
 C             JACOBI PRECONDITIONER
             CASE (1)
-              CALL SUPCGJACA(NOPT,NTRDV,NIAC,APC,DC,ZC)
+              CALL SPSOLJACA(NOPT,NTRDV,NIAC,APC,DC,ZC)
 C             ILU0 AND MILU0 PRECONDITIONERS
             CASE (2,3)
-              CALL SUPCGILU0A(NNZC,NIAC,NIAPC,
+              CALL SPSOLILU0A(NNZC,NIAC,NIAPC,
      2                        APC,IAC,JAC,IUC,DC,ZC)
 C             POLYNOMIAL PRECONDITIONER
             CASE (4)
-              CALL SUPCGPOLYA(NOPT,NTRD,NTRDV,NNZC,NIAC,
+              CALL SPSOLPOLYA(NOPT,NTRD,NTRDV,NNZC,NIAC,
      2                        AC,IAC,JAC,GLSPOLY,DC,ZC)
           END SELECT
-          CALL SUPCGTIMER(1,tpca1,UPCGPCAT)
+          CALL SPSOLTIMER(1,tpca1,PSOLPCAT)
 
-          rho = SUPCGDP( NOPT,NTRDV,NIAC,DC,ZC )
+          rho = SPSOLDP( NOPT,NTRDV,NIAC,DC,ZC )
 C-----------COMPUTE DIRECTIONAL VECTORS
           IF (iiter.EQ.1) THEN
             DO n = 1, NIAC
@@ -1214,9 +1234,9 @@ C-----------COMPUTE DIRECTIONAL VECTORS
           END IF
 C-----------COMPUTE ITERATES
 C           UPDATE qc
-          CALL SUPCGMV(NOPT,NTRD,NNZC,NIAC,AC,PC,QC,IAC,JAC)
+          CALL SPSOLMV(NOPT,NTRD,NNZC,NIAC,AC,PC,QC,IAC,JAC)
 
-          alpha = rho / SUPCGDP( NOPT,NTRDV,NIAC,PC,QC)
+          alpha = rho / SPSOLDP( NOPT,NTRDV,NIAC,PC,QC)
 C-----------UPDATE X AND RESIDUAL
           deltax = DZERO
           rmax   = DZERO
@@ -1250,35 +1270,35 @@ C-----------UNSCALE HEAD CHANGE AND RESIDUAL FOR POLYNOMIAL PRECONDITION
 C-----------SAVE CURRENT INNER ITERATES
           rho0 = rho
         END DO INNER
-C         GPU
-      ELSE
-        CALL UPCGC7(iiter,CU_HDL,CU_STAT,CU_DES,
-     &              NNZC,NIAC,NIAPC,
-     &              NPC,GLSPOLY%NDEGREE,
-     &              CU_IAC,IAC,CU_JAC,JAC,IUC,
-     &              CU_AC,AC,CU_APC,APC,CU_XC,XC,
-     &              CU_DC,DC,CU_ZC,ZC,
-     &              CU_PC,CU_QC,
-     &              GLSPOLY%ALPHA,GLSPOLY%BETA,GLSPOLY%GAMMA,
-     &              CU_SCL,SCL,CU_SCLI,SCLI,
-     &              CU_V,GLSPOLY%D_V,
-     &              CU_V0,GLSPOLY%D_V0,
-     &              CU_V1,GLSPOLY%D_V1,
-     &              PL_DC,PL_ZC,
-     &              cu_rho0,cu_rho,
-     &              MXITER,ICNVG,NITER,dhclose,drclose,
-     &              deltax,rmax,
-     &              UPCGPCAT,UPCGDPT,UPCGMVT,
-     &              UPCGAXPYT,UPCGVVPT,UPCGMISCT,UPCGGPUTT)
-         IUPCGI = IUPCGI + iiter
-         ITER1  = ITER1  + iiter
-
+!C         GPU
+!      ELSE
+!        CALL PSOLC7(iiter,CU_HDL,CU_STAT,CU_DES,
+!     &              NNZC,NIAC,NIAPC,
+!     &              NPC,GLSPOLY%NDEGREE,
+!     &              CU_IAC,IAC,CU_JAC,JAC,IUC,
+!     &              CU_AC,AC,CU_APC,APC,CU_XC,XC,
+!     &              CU_DC,DC,CU_ZC,ZC,
+!     &              CU_PC,CU_QC,
+!     &              GLSPOLY%ALPHA,GLSPOLY%BETA,GLSPOLY%GAMMA,
+!     &              CU_SCL,SCL,CU_SCLI,SCLI,
+!     &              CU_V,GLSPOLY%D_V,
+!     &              CU_V0,GLSPOLY%D_V0,
+!     &              CU_V1,GLSPOLY%D_V1,
+!     &              PL_DC,PL_ZC,
+!     &              cu_rho0,cu_rho,
+!     &              MXITER,ICNVG,NITER,dhclose,drclose,
+!     &              deltax,rmax,
+!     &              PSOLPCAT,PSOLDPT,PSOLMVT,
+!     &              PSOLAXPYT,PSOLVVPT,PSOLMISCT,PSOLGPUTT)
+!         IPSOLI = IPSOLI + iiter
+!         ITER1  = ITER1  + iiter
+!
       END IF CPUGPUT
 C
 C       UNSCALE XC
 !      IF ( NPC.EQ.4 ) THEN
       IF ( ISCL.NE.0 ) THEN
-        CALL SUPCGSCL(0,NNZC,NIAC,AC,XC,BC,SCL,SCLI,IAC,JAC)
+        CALL SPSOLSCL(0,NNZC,NIAC,AC,XC,BC,SCL,SCLI,IAC,JAC)
       END IF
 C
 C-------FILL HNEW WITH NEW ESTIMATE
@@ -1298,82 +1318,82 @@ C-------IF END OF TIME STEP, PRINT # OF ITERATIONS THIS STEP
 C
 C       SET DUMMY ARGUMENT TIMER VARIABLES TO CURRENT VALUE OF
 C       TEMPORARY TIMER VARIABLES
-      UPCGDPT     = DTDP
-      UPCGMVT     = DTMV
-      UPCGAXPYT   = DTAXPY
-      UPCGVVPT    = DTVVP
-      UPCGMISCT   = DTMISC
+      PSOLDPT     = DTDP
+      PSOLMVT     = DTMV
+      PSOLAXPYT   = DTAXPY
+      PSOLVVPT    = DTVVP
+      PSOLMISCT   = DTMISC
 C
-C-------END UPCG TIMER
-      CALL SUPCGTIMER(1,tt1,UPCGTOTT)
+C-------END PSOL TIMER
+      CALL SPSOLTIMER(1,tt1,PSOLTOTT)
 C
 C-------RETURN
       RETURN
 C
-      END SUBROUTINE UPCG7AP
+      END SUBROUTINE PSOL7AP
 
-      SUBROUTINE UPCG7OT(IGRID)
+      SUBROUTINE PSOL7OT(IGRID)
 C     ******************************************************************
-C     OUTPUT UPCG TIMER RESULTS - FLOATING POINT OPERATIONS
+C     OUTPUT PSOL TIMER RESULTS - FLOATING POINT OPERATIONS
 C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
       USE GLOBAL,   ONLY:IOUT
-      USE UPCGMODULE
+      USE PSOLMODULE
       IMPLICIT NONE
 C
 C     + + + DUMMY ARGUMENTS + + +
       INTEGER, INTENT(IN) :: IGRID
 C     + + + LOCAL DEFINITIONS + + +
-      DOUBLEPRECISION :: tupcg
+      DOUBLEPRECISION :: tPSOL
 !      INTEGER :: i
 C     + + + FUNCTIONS + + +
 C     + + + FORMATS + + +
-2000  FORMAT(//,1X,'SUMMARY OF UPCG EXECUTION TIME',
-     &        /,1X,'TOTAL NUMBER OF OUTER UPCG ITERATIONS: ',I10,
-     &        /,1X,'TOTAL NUMBER OF INNER UPCG ITERATIONS: ',I10,
+2000  FORMAT(//,1X,'SUMMARY OF PSOL EXECUTION TIME',
+     &        /,1X,'TOTAL NUMBER OF OUTER PSOL ITERATIONS: ',I10,
+     &        /,1X,'TOTAL NUMBER OF INNER PSOL ITERATIONS: ',I10,
      &       //,1X,'TIMER ITEM',32X,'TIME (SEC.)',4X,' PERCENTAGE',
      &        /,1X,69('-'),
-     &        /,1X,'TOTAL UPCG EXECUTION TIME:             ',G16.7,
+     &        /,1X,'TOTAL PSOL EXECUTION TIME:             ',G16.7,
      &          1X,F10.3,
-     &        /,1X,'TOTAL UPCG A MATRIX FORMULATE TIME:    ',G16.7,
+     &        /,1X,'TOTAL PSOL A MATRIX FORMULATE TIME:    ',G16.7,
      &          1X,F10.3,
-     &        /,1X,'TOTAL UPCG PRECOND. FORMULATE TIME:    ',G16.7,
+     &        /,1X,'TOTAL PSOL PRECOND. FORMULATE TIME:    ',G16.7,
      &          1X,F10.3,
-     &        /,1X,'TOTAL UPCG PRECOND. SOLUTION TIME:     ',G16.7,
+     &        /,1X,'TOTAL PSOL PRECOND. SOLUTION TIME:     ',G16.7,
      &          1X,F10.3,
-     &        /,1X,'TOTAL UPCG DOT PROD. EXECUTION TIME:   ',G16.7,
+     &        /,1X,'TOTAL PSOL DOT PROD. EXECUTION TIME:   ',G16.7,
      &          1X,F10.3,
-     &        /,1X,'TOTAL UPCG MV PROD. EXECUTION TIME:    ',G16.7,
+     &        /,1X,'TOTAL PSOL MV PROD. EXECUTION TIME:    ',G16.7,
      &          1X,F10.3,
-     &        /,1X,'TOTAL UPCG AXPY EXECUTION TIME:        ',G16.7,
+     &        /,1X,'TOTAL PSOL AXPY EXECUTION TIME:        ',G16.7,
      &          1X,F10.3,
-     &        /,1X,'TOTAL UPCG VV PROD. EXECUTION TIME:    ',G16.7,
+     &        /,1X,'TOTAL PSOL VV PROD. EXECUTION TIME:    ',G16.7,
      &          1X,F10.3,
-     &        /,1X,'TOTAL UPCG MISC. EXECUTION TIME:       ',G16.7,
+     &        /,1X,'TOTAL PSOL MISC. EXECUTION TIME:       ',G16.7,
      &          1X,F10.3,
-     &        /,1X,'TOTAL UPCG GPU MEMORY TRANSFER TIME:   ',G16.7,
+     &        /,1X,'TOTAL PSOL GPU MEMORY TRANSFER TIME:   ',G16.7,
      &          1X,F10.3,
      &        /,1X,69('-'))
 C     + + + CODE + + +
 C
 C         SET POINTERS
-        CALL UPCG7PNT(IGRID)
+        CALL PSOL7PNT(IGRID)
 C
-        tupcg = 1.0D0
-        IF ( UPCGTOTT.GT.0.0D0 ) tupcg = tupcg / UPCGTOTT
-        WRITE (IOUT,2000) IUPCGO, IUPCGI, 
-     &                    UPCGTOTT,  100.0D0 * UPCGTOTT * tupcg,
-     &                    UPCGFMAT,  100.0D0 * UPCGFMAT * tupcg,
-     &                    UPCGPCUT,  100.0D0 * UPCGPCUT * tupcg, 
-     &                    UPCGPCAT,  100.0D0 * UPCGPCAT * tupcg, 
-     &                    UPCGDPT,   100.0D0 * UPCGDPT  * tupcg,
-     &                    UPCGMVT,   100.0D0 * UPCGMVT  * tupcg,
-     &                    UPCGAXPYT, 100.0D0 * UPCGAXPYT* tupcg, 
-     &                    UPCGVVPT,  100.0D0 * UPCGVVPT * tupcg,
-     &                    UPCGMISCT, 100.0D0 * UPCGMISCT* tupcg,
-     &                    UPCGGPUTT, 100.0D0 * UPCGGPUTT* tupcg
+        tPSOL = 1.0D0
+        IF ( PSOLTOTT.GT.0.0D0 ) tPSOL = tPSOL / PSOLTOTT
+        WRITE (IOUT,2000) IPSOLO, IPSOLI, 
+     &                    PSOLTOTT,  100.0D0 * PSOLTOTT * tPSOL,
+     &                    PSOLFMAT,  100.0D0 * PSOLFMAT * tPSOL,
+     &                    PSOLPCUT,  100.0D0 * PSOLPCUT * tPSOL, 
+     &                    PSOLPCAT,  100.0D0 * PSOLPCAT * tPSOL, 
+     &                    PSOLDPT,   100.0D0 * PSOLDPT  * tPSOL,
+     &                    PSOLMVT,   100.0D0 * PSOLMVT  * tPSOL,
+     &                    PSOLAXPYT, 100.0D0 * PSOLAXPYT* tPSOL, 
+     &                    PSOLVVPT,  100.0D0 * PSOLVVPT * tPSOL,
+     &                    PSOLMISCT, 100.0D0 * PSOLMISCT* tPSOL,
+     &                    PSOLGPUTT, 100.0D0 * PSOLGPUTT* tPSOL
      
 !C
 !C-------SAVE FINAL A MATRIX IN FULL N X N FORM
@@ -1391,12 +1411,12 @@ C
 C-------RETURN
       RETURN
 C
-      END SUBROUTINE UPCG7OT
+      END SUBROUTINE PSOL7OT
 C
 C
-      SUBROUTINE UPCG7DA(IGRID)
-C  Deallocate UPCG DATA
-        USE UPCGMODULE
+      SUBROUTINE PSOL7DA(IGRID)
+C  Deallocate PSOL DATA
+        USE PSOLMODULE
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: IGRID
@@ -1405,28 +1425,28 @@ C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
 C
 C         SET POINTERS
-        CALL UPCG7PNT(IGRID)
-C
-C         FREE GPU MEMORY
-        IF ( NOPT.EQ.3 ) THEN
-          CALL UPCGC7_FINAL(NPC,CU_HDL,
-     &                      CU_JAC,CU_IAC,
-     &                      CU_AC,CU_APC,CU_XC,
-     &                      CU_DC,CU_ZC,CU_PC,CU_QC,
-     &                      PL_DC,PL_ZC)
-        END IF
-C
-C         DEALLOCATE UPCG MEMORY
+        CALL PSOL7PNT(IGRID)
+!C
+!C         FREE GPU MEMORY
+!        IF ( NOPT.EQ.3 ) THEN
+!          CALL PSOLC7_FINAL(NPC,CU_HDL,
+!     &                      CU_JAC,CU_IAC,
+!     &                      CU_AC,CU_APC,CU_XC,
+!     &                      CU_DC,CU_ZC,CU_PC,CU_QC,
+!     &                      PL_DC,PL_ZC)
+!        END IF
+!C
+C         DEALLOCATE PSOL MEMORY
         DEALLOCATE(ITER1C,NPC,NOPT,NTRD,NTRDV)
         DEALLOCATE(NITERC,NNZC,NIAC)
         DEALLOCATE(NIAPC,NIWC,NPOL,NEIG)
-        DEALLOCATE(HCLOSEUPCG,RCLOSEUPCG)
-        DEALLOCATE(UPCGTOTT,UPCGFMAT)
-        DEALLOCATE(UPCGPCUT,UPCGPCAT,UPCGDPT,UPCGMVT)
-        DEALLOCATE(UPCGAXPYT,UPCGVVPT,UPCGMISCT)
-        DEALLOCATE(UPCGGPUTT)
+        DEALLOCATE(HCLOSEPSOL,RCLOSEPSOL)
+        DEALLOCATE(PSOLTOTT,PSOLFMAT)
+        DEALLOCATE(PSOLPCUT,PSOLPCAT,PSOLDPT,PSOLMVT)
+        DEALLOCATE(PSOLAXPYT,PSOLVVPT,PSOLMISCT)
+        DEALLOCATE(PSOLGPUTT)
         DEALLOCATE(DTDP,DTMV,DTAXPY,DTVVP,DTMISC)
-        DEALLOCATE(IUPCGO,IUPCGI)
+        DEALLOCATE(IPSOLO,IPSOLI)
         DEALLOCATE(NODEC)
         DEALLOCATE(BC)
         DEALLOCATE(XC)
@@ -1446,170 +1466,170 @@ C       WORKING ARRAYS
         DEALLOCATE(SCL)
         DEALLOCATE(SCLI)
         DEALLOCATE(GLSPOLY)
-C       GPU POINTERS
-        DEALLOCATE(CU_HDL,CU_STAT,CU_DES)
-        DEALLOCATE(CU_IAC,CU_JAC)
-        DEALLOCATE(CU_AC,CU_APC,CU_XC)
-        DEALLOCATE(CU_DC,CU_ZC,CU_PC,CU_QC)
-        DEALLOCATE(CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1)
-        DEALLOCATE(PL_DC,PL_ZC)        
-C
+!C       GPU POINTERS
+!        DEALLOCATE(CU_HDL,CU_STAT,CU_DES)
+!        DEALLOCATE(CU_IAC,CU_JAC)
+!        DEALLOCATE(CU_AC,CU_APC,CU_XC)
+!        DEALLOCATE(CU_DC,CU_ZC,CU_PC,CU_QC)
+!        DEALLOCATE(CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1)
+!        DEALLOCATE(PL_DC,PL_ZC)        
+!C
 C---------RETURN
       RETURN
-      END SUBROUTINE UPCG7DA
+      END SUBROUTINE PSOL7DA
       
-      SUBROUTINE UPCG7PNT(IGRID)
-C  Set pointers to UPCG data for a grid
-      USE UPCGMODULE
+      SUBROUTINE PSOL7PNT(IGRID)
+C  Set pointers to PSOL data for a grid
+      USE PSOLMODULE
 C
-      ITER1C=>UPCGDAT(IGRID)%ITER1C
-      NPC=>UPCGDAT(IGRID)%NPC
-      NOPT=>UPCGDAT(IGRID)%NOPT
-      NTRD=>UPCGDAT(IGRID)%NTRD
-      NTRDV=>UPCGDAT(IGRID)%NTRDV
-      NITERC=>UPCGDAT(IGRID)%NITERC
-      NNZC=>UPCGDAT(IGRID)%NNZC
-      NIAC=>UPCGDAT(IGRID)%NIAC
-      NIAPC=>UPCGDAT(IGRID)%NIAPC
-      NIWC=>UPCGDAT(IGRID)%NIWC
-      NPOL=>UPCGDAT(IGRID)%NPOL
-      NEIG=>UPCGDAT(IGRID)%NEIG
-      HCLOSEUPCG=>UPCGDAT(IGRID)%HCLOSEUPCG
-      RCLOSEUPCG=>UPCGDAT(IGRID)%RCLOSEUPCG
-      UPCGTOTT=>UPCGDAT(IGRID)%UPCGTOTT
-      UPCGFMAT=>UPCGDAT(IGRID)%UPCGFMAT
-      UPCGPCUT=>UPCGDAT(IGRID)%UPCGPCUT
-      UPCGPCAT=>UPCGDAT(IGRID)%UPCGPCAT
-      UPCGDPT=>UPCGDAT(IGRID)%UPCGDPT
-      UPCGMVT=>UPCGDAT(IGRID)%UPCGMVT
-      UPCGAXPYT=>UPCGDAT(IGRID)%UPCGAXPYT
-      UPCGVVPT=>UPCGDAT(IGRID)%UPCGVVPT
-      UPCGMISCT=>UPCGDAT(IGRID)%UPCGMISCT
-      UPCGGPUTT=>UPCGDAT(IGRID)%UPCGGPUTT
-      IUPCGO=>UPCGDAT(IGRID)%IUPCGO
-      IUPCGI=>UPCGDAT(IGRID)%IUPCGI
-      NODEC=>UPCGDAT(IGRID)%NODEC
-      BC=>UPCGDAT(IGRID)%BC
-      XC=>UPCGDAT(IGRID)%XC
-      AC=>UPCGDAT(IGRID)%AC
-!      TAPC=>UPCGDAT(IGRID)%TAPC
-      APC=>UPCGDAT(IGRID)%APC
-      IAC=>UPCGDAT(IGRID)%IAC
-      JAC=>UPCGDAT(IGRID)%JAC
-      IUC=>UPCGDAT(IGRID)%IUC
-      IXMAP=>UPCGDAT(IGRID)%IXMAP
+      ITER1C=>PSOLDAT(IGRID)%ITER1C
+      NPC=>PSOLDAT(IGRID)%NPC
+      NOPT=>PSOLDAT(IGRID)%NOPT
+      NTRD=>PSOLDAT(IGRID)%NTRD
+      NTRDV=>PSOLDAT(IGRID)%NTRDV
+      NITERC=>PSOLDAT(IGRID)%NITERC
+      NNZC=>PSOLDAT(IGRID)%NNZC
+      NIAC=>PSOLDAT(IGRID)%NIAC
+      NIAPC=>PSOLDAT(IGRID)%NIAPC
+      NIWC=>PSOLDAT(IGRID)%NIWC
+      NPOL=>PSOLDAT(IGRID)%NPOL
+      NEIG=>PSOLDAT(IGRID)%NEIG
+      HCLOSEPSOL=>PSOLDAT(IGRID)%HCLOSEPSOL
+      RCLOSEPSOL=>PSOLDAT(IGRID)%RCLOSEPSOL
+      PSOLTOTT=>PSOLDAT(IGRID)%PSOLTOTT
+      PSOLFMAT=>PSOLDAT(IGRID)%PSOLFMAT
+      PSOLPCUT=>PSOLDAT(IGRID)%PSOLPCUT
+      PSOLPCAT=>PSOLDAT(IGRID)%PSOLPCAT
+      PSOLDPT=>PSOLDAT(IGRID)%PSOLDPT
+      PSOLMVT=>PSOLDAT(IGRID)%PSOLMVT
+      PSOLAXPYT=>PSOLDAT(IGRID)%PSOLAXPYT
+      PSOLVVPT=>PSOLDAT(IGRID)%PSOLVVPT
+      PSOLMISCT=>PSOLDAT(IGRID)%PSOLMISCT
+      PSOLGPUTT=>PSOLDAT(IGRID)%PSOLGPUTT
+      IPSOLO=>PSOLDAT(IGRID)%IPSOLO
+      IPSOLI=>PSOLDAT(IGRID)%IPSOLI
+      NODEC=>PSOLDAT(IGRID)%NODEC
+      BC=>PSOLDAT(IGRID)%BC
+      XC=>PSOLDAT(IGRID)%XC
+      AC=>PSOLDAT(IGRID)%AC
+!      TAPC=>PSOLDAT(IGRID)%TAPC
+      APC=>PSOLDAT(IGRID)%APC
+      IAC=>PSOLDAT(IGRID)%IAC
+      JAC=>PSOLDAT(IGRID)%JAC
+      IUC=>PSOLDAT(IGRID)%IUC
+      IXMAP=>PSOLDAT(IGRID)%IXMAP
 C       WORKING ARRAYS
-      IWC=>UPCGDAT(IGRID)%IWC
-      DC=>UPCGDAT(IGRID)%DC
-      PC=>UPCGDAT(IGRID)%PC
-      QC=>UPCGDAT(IGRID)%QC
-      ZC=>UPCGDAT(IGRID)%ZC
+      IWC=>PSOLDAT(IGRID)%IWC
+      DC=>PSOLDAT(IGRID)%DC
+      PC=>PSOLDAT(IGRID)%PC
+      QC=>PSOLDAT(IGRID)%QC
+      ZC=>PSOLDAT(IGRID)%ZC
 C       POLYNOMIAL PRECONDITIONER
-      ISCL=>UPCGDAT(IGRID)%ISCL
-      SCL=>UPCGDAT(IGRID)%SCL
-      SCLI=>UPCGDAT(IGRID)%SCLI
-      GLSPOLY=>UPCGDAT(IGRID)%GLSPOLY
-C       GPU POINTERS
-      CU_HDL=>UPCGDAT(IGRID)%CU_HDL
-      CU_STAT=>UPCGDAT(IGRID)%CU_STAT
-      CU_DES=>UPCGDAT(IGRID)%CU_DES
-      CU_IAC=>UPCGDAT(IGRID)%CU_IAC
-      CU_JAC=>UPCGDAT(IGRID)%CU_JAC
-      CU_AC=>UPCGDAT(IGRID)%CU_AC
-      CU_APC=>UPCGDAT(IGRID)%CU_APC
-      CU_XC=>UPCGDAT(IGRID)%CU_XC
-      CU_DC=>UPCGDAT(IGRID)%CU_DC
-      CU_ZC=>UPCGDAT(IGRID)%CU_ZC
-      CU_PC=>UPCGDAT(IGRID)%CU_PC
-      CU_QC=>UPCGDAT(IGRID)%CU_QC
-      CU_SCL=>UPCGDAT(IGRID)%CU_SCL
-      CU_SCLI=>UPCGDAT(IGRID)%CU_SCLI
-      CU_V=>UPCGDAT(IGRID)%CU_V
-      CU_V0=>UPCGDAT(IGRID)%CU_V0
-      CU_V1=>UPCGDAT(IGRID)%CU_V1
-      PL_DC=>UPCGDAT(IGRID)%PL_DC
-      PL_ZC=>UPCGDAT(IGRID)%PL_ZC
-C
+      ISCL=>PSOLDAT(IGRID)%ISCL
+      SCL=>PSOLDAT(IGRID)%SCL
+      SCLI=>PSOLDAT(IGRID)%SCLI
+      GLSPOLY=>PSOLDAT(IGRID)%GLSPOLY
+!C       GPU POINTERS
+!      CU_HDL=>PSOLDAT(IGRID)%CU_HDL
+!      CU_STAT=>PSOLDAT(IGRID)%CU_STAT
+!      CU_DES=>PSOLDAT(IGRID)%CU_DES
+!      CU_IAC=>PSOLDAT(IGRID)%CU_IAC
+!      CU_JAC=>PSOLDAT(IGRID)%CU_JAC
+!      CU_AC=>PSOLDAT(IGRID)%CU_AC
+!      CU_APC=>PSOLDAT(IGRID)%CU_APC
+!      CU_XC=>PSOLDAT(IGRID)%CU_XC
+!      CU_DC=>PSOLDAT(IGRID)%CU_DC
+!      CU_ZC=>PSOLDAT(IGRID)%CU_ZC
+!      CU_PC=>PSOLDAT(IGRID)%CU_PC
+!      CU_QC=>PSOLDAT(IGRID)%CU_QC
+!      CU_SCL=>PSOLDAT(IGRID)%CU_SCL
+!      CU_SCLI=>PSOLDAT(IGRID)%CU_SCLI
+!      CU_V=>PSOLDAT(IGRID)%CU_V
+!      CU_V0=>PSOLDAT(IGRID)%CU_V0
+!      CU_V1=>PSOLDAT(IGRID)%CU_V1
+!      PL_DC=>PSOLDAT(IGRID)%PL_DC
+!      PL_ZC=>PSOLDAT(IGRID)%PL_ZC
+!C
       RETURN
-      END SUBROUTINE UPCG7PNT
+      END SUBROUTINE PSOL7PNT
 
-      SUBROUTINE UPCG7PSV(IGRID)
-C  Save pointers to UPCG data
-      USE UPCGMODULE
+      SUBROUTINE PSOL7PSV(IGRID)
+C  Save pointers to PSOL data
+      USE PSOLMODULE
 C
-      UPCGDAT(IGRID)%ITER1C=>ITER1C
-      UPCGDAT(IGRID)%NPC=>NPC
-      UPCGDAT(IGRID)%NOPT=>NOPT
-      UPCGDAT(IGRID)%NTRD=>NTRD
-      UPCGDAT(IGRID)%NTRDV=>NTRDV
-      UPCGDAT(IGRID)%NITERC=>NITERC
-      UPCGDAT(IGRID)%NNZC=>NNZC
-      UPCGDAT(IGRID)%NIAC=>NIAC
-      UPCGDAT(IGRID)%NIAPC=>NIAPC
-      UPCGDAT(IGRID)%NIWC=>NIWC
-      UPCGDAT(IGRID)%NPOL=>NPOL
-      UPCGDAT(IGRID)%NEIG=>NEIG
-      UPCGDAT(IGRID)%HCLOSEUPCG=>HCLOSEUPCG
-      UPCGDAT(IGRID)%RCLOSEUPCG=>RCLOSEUPCG
-      UPCGDAT(IGRID)%UPCGTOTT=>UPCGTOTT
-      UPCGDAT(IGRID)%UPCGFMAT=>UPCGFMAT
-      UPCGDAT(IGRID)%UPCGPCUT=>UPCGPCUT
-      UPCGDAT(IGRID)%UPCGPCAT=>UPCGPCAT
-      UPCGDAT(IGRID)%UPCGDPT=>UPCGDPT
-      UPCGDAT(IGRID)%UPCGMVT=>UPCGMVT
-      UPCGDAT(IGRID)%UPCGAXPYT=>UPCGAXPYT
-      UPCGDAT(IGRID)%UPCGVVPT=>UPCGVVPT
-      UPCGDAT(IGRID)%UPCGMISCT=>UPCGMISCT
-      UPCGDAT(IGRID)%UPCGGPUTT=>UPCGGPUTT
-      UPCGDAT(IGRID)%IUPCGO=>IUPCGO
-      UPCGDAT(IGRID)%IUPCGI=>IUPCGI
-      UPCGDAT(IGRID)%NODEC=>NODEC
-      UPCGDAT(IGRID)%BC=>BC
-      UPCGDAT(IGRID)%XC=>XC
-      UPCGDAT(IGRID)%AC=>AC
-!      UPCGDAT(IGRID)%TAPC=>TAPC
-      UPCGDAT(IGRID)%APC=>APC
-      UPCGDAT(IGRID)%IAC=>IAC
-      UPCGDAT(IGRID)%JAC=>JAC
-      UPCGDAT(IGRID)%IUC=>IUC
-      UPCGDAT(IGRID)%IXMAP=>IXMAP
+      PSOLDAT(IGRID)%ITER1C=>ITER1C
+      PSOLDAT(IGRID)%NPC=>NPC
+      PSOLDAT(IGRID)%NOPT=>NOPT
+      PSOLDAT(IGRID)%NTRD=>NTRD
+      PSOLDAT(IGRID)%NTRDV=>NTRDV
+      PSOLDAT(IGRID)%NITERC=>NITERC
+      PSOLDAT(IGRID)%NNZC=>NNZC
+      PSOLDAT(IGRID)%NIAC=>NIAC
+      PSOLDAT(IGRID)%NIAPC=>NIAPC
+      PSOLDAT(IGRID)%NIWC=>NIWC
+      PSOLDAT(IGRID)%NPOL=>NPOL
+      PSOLDAT(IGRID)%NEIG=>NEIG
+      PSOLDAT(IGRID)%HCLOSEPSOL=>HCLOSEPSOL
+      PSOLDAT(IGRID)%RCLOSEPSOL=>RCLOSEPSOL
+      PSOLDAT(IGRID)%PSOLTOTT=>PSOLTOTT
+      PSOLDAT(IGRID)%PSOLFMAT=>PSOLFMAT
+      PSOLDAT(IGRID)%PSOLPCUT=>PSOLPCUT
+      PSOLDAT(IGRID)%PSOLPCAT=>PSOLPCAT
+      PSOLDAT(IGRID)%PSOLDPT=>PSOLDPT
+      PSOLDAT(IGRID)%PSOLMVT=>PSOLMVT
+      PSOLDAT(IGRID)%PSOLAXPYT=>PSOLAXPYT
+      PSOLDAT(IGRID)%PSOLVVPT=>PSOLVVPT
+      PSOLDAT(IGRID)%PSOLMISCT=>PSOLMISCT
+      PSOLDAT(IGRID)%PSOLGPUTT=>PSOLGPUTT
+      PSOLDAT(IGRID)%IPSOLO=>IPSOLO
+      PSOLDAT(IGRID)%IPSOLI=>IPSOLI
+      PSOLDAT(IGRID)%NODEC=>NODEC
+      PSOLDAT(IGRID)%BC=>BC
+      PSOLDAT(IGRID)%XC=>XC
+      PSOLDAT(IGRID)%AC=>AC
+!      PSOLDAT(IGRID)%TAPC=>TAPC
+      PSOLDAT(IGRID)%APC=>APC
+      PSOLDAT(IGRID)%IAC=>IAC
+      PSOLDAT(IGRID)%JAC=>JAC
+      PSOLDAT(IGRID)%IUC=>IUC
+      PSOLDAT(IGRID)%IXMAP=>IXMAP
 C       WORKING ARRAYS
-      UPCGDAT(IGRID)%IWC=>IWC
-      UPCGDAT(IGRID)%DC=>DC
-      UPCGDAT(IGRID)%PC=>PC
-      UPCGDAT(IGRID)%QC=>QC
-      UPCGDAT(IGRID)%ZC=>ZC
+      PSOLDAT(IGRID)%IWC=>IWC
+      PSOLDAT(IGRID)%DC=>DC
+      PSOLDAT(IGRID)%PC=>PC
+      PSOLDAT(IGRID)%QC=>QC
+      PSOLDAT(IGRID)%ZC=>ZC
 C       POLYNOMIAL PRECONDITIONER
-      UPCGDAT(IGRID)%ISCL=>ISCL
-      UPCGDAT(IGRID)%SCL=>SCL
-      UPCGDAT(IGRID)%SCLI=>SCLI
-      UPCGDAT(IGRID)%GLSPOLY=>GLSPOLY
-C       GPU POINTERS
-      UPCGDAT(IGRID)%CU_HDL=>CU_HDL
-      UPCGDAT(IGRID)%CU_STAT=>CU_STAT
-      UPCGDAT(IGRID)%CU_DES=>CU_DES
-      UPCGDAT(IGRID)%CU_IAC=>CU_IAC
-      UPCGDAT(IGRID)%CU_JAC=>CU_JAC
-      UPCGDAT(IGRID)%CU_AC=>CU_AC
-      UPCGDAT(IGRID)%CU_APC=>CU_APC
-      UPCGDAT(IGRID)%CU_XC=>CU_XC
-      UPCGDAT(IGRID)%CU_DC=>CU_DC
-      UPCGDAT(IGRID)%CU_ZC=>CU_ZC
-      UPCGDAT(IGRID)%CU_PC=>CU_PC
-      UPCGDAT(IGRID)%CU_QC=>CU_QC
-      UPCGDAT(IGRID)%CU_SCL=>CU_SCL
-      UPCGDAT(IGRID)%CU_SCLI=>CU_SCLI
-      UPCGDAT(IGRID)%CU_V=>CU_V
-      UPCGDAT(IGRID)%CU_V0=>CU_V0
-      UPCGDAT(IGRID)%CU_V1=>CU_V1
-      UPCGDAT(IGRID)%PL_DC=>PL_DC
-      UPCGDAT(IGRID)%PL_ZC=>PL_ZC
+      PSOLDAT(IGRID)%ISCL=>ISCL
+      PSOLDAT(IGRID)%SCL=>SCL
+      PSOLDAT(IGRID)%SCLI=>SCLI
+      PSOLDAT(IGRID)%GLSPOLY=>GLSPOLY
+!C       GPU POINTERS
+!      PSOLDAT(IGRID)%CU_HDL=>CU_HDL
+!      PSOLDAT(IGRID)%CU_STAT=>CU_STAT
+!      PSOLDAT(IGRID)%CU_DES=>CU_DES
+!      PSOLDAT(IGRID)%CU_IAC=>CU_IAC
+!      PSOLDAT(IGRID)%CU_JAC=>CU_JAC
+!      PSOLDAT(IGRID)%CU_AC=>CU_AC
+!      PSOLDAT(IGRID)%CU_APC=>CU_APC
+!      PSOLDAT(IGRID)%CU_XC=>CU_XC
+!      PSOLDAT(IGRID)%CU_DC=>CU_DC
+!      PSOLDAT(IGRID)%CU_ZC=>CU_ZC
+!      PSOLDAT(IGRID)%CU_PC=>CU_PC
+!      PSOLDAT(IGRID)%CU_QC=>CU_QC
+!      PSOLDAT(IGRID)%CU_SCL=>CU_SCL
+!      PSOLDAT(IGRID)%CU_SCLI=>CU_SCLI
+!      PSOLDAT(IGRID)%CU_V=>CU_V
+!      PSOLDAT(IGRID)%CU_V0=>CU_V0
+!      PSOLDAT(IGRID)%CU_V1=>CU_V1
+!      PSOLDAT(IGRID)%PL_DC=>PL_DC
+!      PSOLDAT(IGRID)%PL_ZC=>PL_ZC
 C
       RETURN
-      END SUBROUTINE UPCG7PSV
+      END SUBROUTINE PSOL7PSV
 C
 C-------ROUTINE TO SCALE THE COEFFICIENT MATRIX
-      SUBROUTINE SUPCGSCL(ISCALE,NNZC,NIAC,AC,XC,BC,SCL,SCLI,IAC,JAC)
+      SUBROUTINE SPSOLSCL(ISCALE,NNZC,NIAC,AC,XC,BC,SCL,SCLI,IAC,JAC)
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: ISCALE
         INTEGER, INTENT(IN) :: NNZC
@@ -1674,13 +1694,13 @@ C             UNSCALE XC
         END IF
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGSCL
+      END SUBROUTINE SPSOLSCL
 C
 C-------ROUTINE TO UPDATE THE PRECONDITIONER
-      SUBROUTINE SUPCGPCU(NOPT,NTRD,NTRDV,NNZC,NIAC,NIAPC,NIWC,NPC,
+      SUBROUTINE SPSOLPCU(NOPT,NTRD,NTRDV,NNZC,NIAC,NIAPC,NIWC,NPC,
      2                    AC,APC,IAC,JAC,IUC,IWC,
      3                    GLSPOLY)
-        USE UPCGMODULE, ONLY: TGLSPOLY
+        USE PSOLMODULE, ONLY: TGLSPOLY
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -1708,23 +1728,23 @@ C           NO PRE-CONDITIONER
           CASE (0)
 C           JACOBI PRE-CONDITIONER
           CASE (1)
-            CALL SUPCGPCJ(NNZC,NIAC,AC,APC,IAC)
+            CALL SPSOLPCJ(NNZC,NIAC,AC,APC,IAC)
 C           ILU0
           CASE (2,3)
-            CALL SUPCGPCILU0(NPC,NNZC,NIAC,NIAPC,NIWC,
+            CALL SPSOLPCILU0(NPC,NNZC,NIAC,NIAPC,NIWC,
      2                       AC,APC,IAC,JAC,IUC,IWC)
 C           NEUMAN POLYNOMIAL
           CASE (4)
-            CALL SUPCGGLSPOL(NOPT,NTRD,NTRDV,NNZC,NIAC,AC,IAC,JAC,
+            CALL SPSOLGLSPOL(NOPT,NTRD,NTRDV,NNZC,NIAC,AC,IAC,JAC,
      2                       GLSPOLY)
 C           ADDITIONAL PRECONDITIONERS - ILU, etc.
         END SELECT
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGPCU
+      END SUBROUTINE SPSOLPCU
 C
 C-------JACOBI PRECONDITIONER - INVERSE OF DIAGONAL 
-      SUBROUTINE SUPCGPCJ(NNZC,NIAC,AC,APC,IAC)
+      SUBROUTINE SPSOLPCJ(NNZC,NIAC,AC,APC,IAC)
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NNZC
         INTEGER, INTENT(IN) :: NIAC
@@ -1744,15 +1764,15 @@ C     + + + CODE + + +
             id = IAC(n)
             t  = AC(id)
             IF ( ABS( t ).EQ.DZERO ) THEN
-              CALL USTOP('SUPCGPCJ ERROR: ABS(AC)=0.0')
+              CALL USTOP('SPSOLPCJ ERROR: ABS(AC)=0.0')
             END IF
             APC(n) = DONE / t
         END DO
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGPCJ
+      END SUBROUTINE SPSOLPCJ
 
-      SUBROUTINE SUPCGJACA(NOPT,NTRDV,NIAC,A,D1,D2)
+      SUBROUTINE SPSOLJACA(NOPT,NTRDV,NIAC,A,D1,D2)
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -1768,7 +1788,7 @@ C     + + + LOCAL DEFINITIONS + + +
         DOUBLEPRECISION, PARAMETER :: DONE  = 1.0D0
 C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
-        CALL SUPCGVVP(NOPT,NTRDV,NIAC,A,D1,D2)
+        CALL SPSOLVVP(NOPT,NTRDV,NIAC,A,D1,D2)
 !        SELECT CASE ( NOPT )
 !C           CPU
 !          CASE (1)
@@ -1793,9 +1813,9 @@ C     + + + CODE + + +
 !        END SELECT
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGJACA
+      END SUBROUTINE SPSOLJACA
 
-      SUBROUTINE SUPCGPCILU0(NPC,NNZC,NIAC,NIAPC,NIWC,
+      SUBROUTINE SPSOLPCILU0(NPC,NNZC,NIAC,NIAPC,NIWC,
      2                       AC,APC,IAC,JAC,IUC,IWC)
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
@@ -1866,7 +1886,7 @@ C           DIAGONAL - CALCULATE INVERSE OF DIAGONAL FOR SOLUTION
           IF ( tl.GT.DZERO ) THEN
             APC(id0) = DONE / tl
           ELSE
-            CALL USTOP('SUPCGPCILU0: tl <= 0.0')
+            CALL USTOP('SPSOLPCILU0: tl <= 0.0')
             !izero = 1
             !EXIT MAIN
             !APC(id0) = 1.0D+20
@@ -1885,9 +1905,9 @@ C---------REVERT TO A IF ZERO ON DIAGONAL ENCOUNTERED
         END IF
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGPCILU0
+      END SUBROUTINE SPSOLPCILU0
 
-      SUBROUTINE SUPCGILU0A(NNZC,NIAC,NIAPC,
+      SUBROUTINE SPSOLILU0A(NNZC,NIAC,NIAPC,
      2                      APC,IAC,JAC,IUC,R,D)
 !        USE OMP_LIB
         IMPLICIT NONE
@@ -1934,12 +1954,12 @@ C           COMPUTE D FOR DIAGONAL - D = D / U
         END DO BACKWARD
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGILU0A
+      END SUBROUTINE SPSOLILU0A
 
 C-------POLYNOMIAL PRECONDITIONER
-      SUBROUTINE SUPCGGLSPOL(NOPT,NTRD,NTRDV,NNZC,NIAC,AC,IAC,JAC,
+      SUBROUTINE SPSOLGLSPOL(NOPT,NTRD,NTRDV,NNZC,NIAC,AC,IAC,JAC,
      2                       GLSPOLY)
-        USE UPCGMODULE, ONLY: TGLSPOLY
+        USE PSOLMODULE, ONLY: TGLSPOLY
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -1959,7 +1979,7 @@ C---------ESTIMATE MAXIMUM AND MINIMUM EIGENVALUES
 C         ACTUAL MAXIMUM AND MINIMUM EIGENVALUES ARE CALCULATED IF
 C         GLSPOLY%NLANSTEP EQUALS NIAC
         IF ( GLSPOLY%IEIGCALC.NE.0 ) THEN
-          CALL UPCGLANCZOS(NOPT,NTRD,NTRDV,NIAC,NNZC,IAC,JAC,AC,
+          CALL PSOLLANCZOS(NOPT,NTRD,NTRDV,NIAC,NNZC,IAC,JAC,AC,
      2      GLSPOLY%NLANSTEP,GLSPOLY%NLAN2,GLSPOLY%D_LANCZOS,
      3      GLSPOLY%D_V1,GLSPOLY%D_V0,GLSPOLY%D_V,
      4      GLSPOLY%D_E,GLSPOLY%INTV)
@@ -1967,15 +1987,15 @@ C         GLSPOLY%NLANSTEP EQUALS NIAC
 C
 C---------CALCULATE ALPHA, BETA, AND GAMMA VALUES FOR POLYNOMIAL
 C         PRECONDITIONER
-        CALL UPCGUPDPOLY(GLSPOLY)        
+        CALL PSOLUPDPOLY(GLSPOLY)        
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGGLSPOL
+      END SUBROUTINE SPSOLGLSPOL
 
 
-      SUBROUTINE SUPCGMV(NOPT,NTRD,NNZC,NIAC,A,D1,D2,IAC,JAC)
+      SUBROUTINE SPSOLMV(NOPT,NTRD,NNZC,NIAC,A,D1,D2,IAC,JAC)
 !        USE OMP_LIB
-        USE UPCGMODULE, ONLY: DTMV
+        USE PSOLMODULE, ONLY: DTMV
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -2001,7 +2021,7 @@ C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
 C
 C---------START TIMER
-        CALL SUPCGTIMER(0,tv,DTMV)
+        CALL SPSOLTIMER(0,tv,DTMV)
 C
         SELECT CASE ( NOPT )
           CASE (1,3)
@@ -2031,7 +2051,7 @@ C               ADD DIAGONAL AND OFF-DIAGONAL TERMS
               jend     = IAC(iend)
               jlen     = jend - jstart + 1
               IF ( iblksize.GT.0 ) THEN 
-                CALL SUPCGSGEMV(iblksize,NIAC,jlen,jstart,
+                CALL SPSOLSGEMV(iblksize,NIAC,jlen,jstart,
      2                          IAC(istart),JAC(jstart),
      3                          A(jstart),D1,D2(istart))
               END IF
@@ -2063,12 +2083,12 @@ C               ADD DIAGONAL AND OFF-DIAGONAL TERMS
      2         'j:',I5,1X,'ic0:',I5,1X,'ic1',I5,1X't:'G15.7)
 C
 C         END TIMER
-        CALL SUPCGTIMER(1,tv,DTMV)
+        CALL SPSOLTIMER(1,tv,DTMV)
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGMV
+      END SUBROUTINE SPSOLMV
 
-      SUBROUTINE SUPCGSGEMV(IBLKSIZE,NIAC,JLEN,JSTART,IA,JA,A,D1,D2)
+      SUBROUTINE SPSOLSGEMV(IBLKSIZE,NIAC,JLEN,JSTART,IA,JA,A,D1,D2)
         IMPLICIT NONE
 C         + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: IBLKSIZE
@@ -2097,10 +2117,10 @@ C         + + + CODE + + +
         END DO
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGSGEMV
+      END SUBROUTINE SPSOLSGEMV
 
-      SUBROUTINE SUPCGAXPY(NOPT,NTRDV,NIAC,C,D1,D2)
-        USE UPCGMODULE, ONLY: DTAXPY
+      SUBROUTINE SPSOLAXPY(NOPT,NTRDV,NIAC,C,D1,D2)
+        USE PSOLMODULE, ONLY: DTAXPY
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -2115,7 +2135,7 @@ C     + + + LOCAL DEFINITIONS + + +
 C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
 C---------START TIMER
-        CALL SUPCGTIMER(0,tv,DTAXPY)
+        CALL SPSOLTIMER(0,tv,DTAXPY)
 C
         SELECT CASE ( NOPT )
           CASE ( 1 )
@@ -2135,13 +2155,13 @@ C
 !$OMP  END PARALLEL
         END SELECT
 C---------END TIMER
-        CALL SUPCGTIMER(1,tv,DTAXPY)
+        CALL SPSOLTIMER(1,tv,DTAXPY)
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGAXPY
+      END SUBROUTINE SPSOLAXPY
 
-      SUBROUTINE SUPCGSETX(NOPT,NTRDV,NIAC,D1,C)
-        USE UPCGMODULE, ONLY: DTMISC
+      SUBROUTINE SPSOLSETX(NOPT,NTRDV,NIAC,D1,C)
+        USE PSOLMODULE, ONLY: DTMISC
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -2155,7 +2175,7 @@ C     + + + LOCAL DEFINITIONS + + +
 C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
 C---------START TIMER
-        CALL SUPCGTIMER(0,tv,DTMISC)
+        CALL SPSOLTIMER(0,tv,DTMISC)
 C
         SELECT CASE ( NOPT )
           CASE ( 1 )
@@ -2175,13 +2195,13 @@ C
 !$OMP  END PARALLEL
         END SELECT
 C---------END TIMER
-        CALL SUPCGTIMER(1,tv,DTMISC)
+        CALL SPSOLTIMER(1,tv,DTMISC)
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGSETX
+      END SUBROUTINE SPSOLSETX
 
-      SUBROUTINE SUPCGDCOPY(NOPT,NTRDV,NIAC,D1,D2)
-        USE UPCGMODULE, ONLY: DTMISC
+      SUBROUTINE SPSOLDCOPY(NOPT,NTRDV,NIAC,D1,D2)
+        USE PSOLMODULE, ONLY: DTMISC
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -2195,7 +2215,7 @@ C     + + + LOCAL DEFINITIONS + + +
 C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
 C---------START TIMER
-        CALL SUPCGTIMER(0,tv,DTMISC)
+        CALL SPSOLTIMER(0,tv,DTMISC)
 C
         SELECT CASE ( NOPT )
           CASE ( 1 )
@@ -2215,13 +2235,13 @@ C
 !$OMP  END PARALLEL
         END SELECT
 C---------END TIMER
-        CALL SUPCGTIMER(1,tv,DTMISC)
+        CALL SPSOLTIMER(1,tv,DTMISC)
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGDCOPY
+      END SUBROUTINE SPSOLDCOPY
 
-      SUBROUTINE SUPCGDSCAL(NOPT,NTRDV,NIAC,C,D1)
-        USE UPCGMODULE, ONLY: DTMISC
+      SUBROUTINE SPSOLDSCAL(NOPT,NTRDV,NIAC,C,D1)
+        USE PSOLMODULE, ONLY: DTMISC
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -2235,7 +2255,7 @@ C     + + + LOCAL DEFINITIONS + + +
 C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
 C---------START TIMER
-        CALL SUPCGTIMER(0,tv,DTMISC)
+        CALL SPSOLTIMER(0,tv,DTMISC)
 C
         SELECT CASE ( NOPT )
           CASE ( 1 )
@@ -2255,13 +2275,13 @@ C
 !$OMP  END PARALLEL
         END SELECT
 C---------END TIMER
-        CALL SUPCGTIMER(1,tv,DTMISC)
+        CALL SPSOLTIMER(1,tv,DTMISC)
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGDSCAL
+      END SUBROUTINE SPSOLDSCAL
 
-      SUBROUTINE SUPCGVVP(NOPT,NTRDV,NIAC,D1,D2,D3)
-        USE UPCGMODULE, ONLY: DTVVP
+      SUBROUTINE SPSOLVVP(NOPT,NTRDV,NIAC,D1,D2,D3)
+        USE PSOLMODULE, ONLY: DTVVP
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -2276,7 +2296,7 @@ C     + + + LOCAL DEFINITIONS + + +
 C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
 C---------START TIMER
-        CALL SUPCGTIMER(0,tv,DTVVP)
+        CALL SPSOLTIMER(0,tv,DTVVP)
 C
         SELECT CASE ( NOPT )
           CASE ( 1 )
@@ -2296,13 +2316,13 @@ C
 !$OMP  END PARALLEL
         END SELECT
 C---------END TIMER
-        CALL SUPCGTIMER(1,tv,DTVVP)
+        CALL SPSOLTIMER(1,tv,DTVVP)
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGVVP
+      END SUBROUTINE SPSOLVVP
 
-      DOUBLEPRECISION FUNCTION SUPCGDP(NOPT,NTRDV,NIAC,A,B) RESULT(C)
-        USE UPCGMODULE, ONLY: DTDP
+      DOUBLEPRECISION FUNCTION SPSOLDP(NOPT,NTRDV,NIAC,A,B) RESULT(C)
+        USE PSOLMODULE, ONLY: DTDP
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NOPT
@@ -2317,7 +2337,7 @@ C     + + + LOCAL DEFINITIONS + + +
 C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
 C---------START TIMER
-        CALL SUPCGTIMER(0,tv,DTDP)
+        CALL SPSOLTIMER(0,tv,DTDP)
 C
         C = DZERO
         SELECT CASE ( NOPT )
@@ -2339,14 +2359,14 @@ C
 !$OMP  END PARALLEL
         END SELECT
 C---------END TIMER
-        CALL SUPCGTIMER(1,tv,DTDP)
+        CALL SPSOLTIMER(1,tv,DTDP)
 C---------RETURN
         RETURN
-      END FUNCTION SUPCGDP
+      END FUNCTION SPSOLDP
 C
 C-------INFINITY NORM
-      DOUBLEPRECISION FUNCTION SUPCGLINFNORM(NIAC,A) RESULT(B)
-        USE UPCGMODULE, ONLY: DTMISC
+      DOUBLEPRECISION FUNCTION SPSOLLINFNORM(NIAC,A) RESULT(B)
+        USE PSOLMODULE, ONLY: DTMISC
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: NIAC
@@ -2359,7 +2379,7 @@ C     + + + LOCAL DEFINITIONS + + +
 C     + + + FUNCTIONS + + +
 C     + + + CODE + + +
 C---------START TIMER
-        CALL SUPCGTIMER(0,tv,DTMISC)
+        CALL SPSOLTIMER(0,tv,DTMISC)
 C
         B    = DZERO
         babs = DZERO
@@ -2370,13 +2390,13 @@ C
           END IF
         END DO
 C---------END TIMER
-        CALL SUPCGTIMER(1,tv,DTMISC)
+        CALL SPSOLTIMER(1,tv,DTMISC)
 C---------RETURN
         RETURN
-      END FUNCTION SUPCGLINFNORM
+      END FUNCTION SPSOLLINFNORM
 C
-C-------TIMER FOR UPCG CALCULATIONS
-      SUBROUTINE SUPCGTIMER(It,T1,Ts)
+C-------TIMER FOR PSOL CALCULATIONS
+      SUBROUTINE SPSOLTIMER(It,T1,Ts)
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: It
@@ -2395,6 +2415,6 @@ C     + + + CODE + + +
         END IF
 C---------RETURN
         RETURN
-      END SUBROUTINE SUPCGTIMER
+      END SUBROUTINE SPSOLTIMER
       
       

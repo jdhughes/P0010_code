@@ -1,6 +1,6 @@
-      SUBROUTINE UPCGUPDPOLY(GLSPOLY)
+      SUBROUTINE PSOLUPDPOLY(GLSPOLY)
         USE GLOBAL,   ONLY:IOUT
-        USE UPCGMODULE, ONLY: TGLSPOLY
+        USE PSOLMODULE, ONLY: TGLSPOLY
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         TYPE (TGLSPOLY), INTENT(INOUT)           :: GLSPOLY 
@@ -63,8 +63,8 @@ C         POLYNOMIAL DEGREE
           GLSPOLY%BETA(i+1) = bet
           
           IF ( bet.EQ.dzero ) THEN
-            WRITE (IOUT,'(//,A)') 'UPCGUPDPOLY: bet = 0.0'
-            CALL USTOP('UPCGUPDPOLY: bet = 0.0')
+            WRITE (IOUT,'(//,A)') 'PSOLUPDPOLY: bet = 0.0'
+            CALL USTOP('PSOLUPDPOLY: bet = 0.0')
           END IF
           
 C-----------COPY PPOL TO QPOL
@@ -82,7 +82,7 @@ C-----------COPY PPOL TO QPOL
         END DO
 C---------RETURN
         RETURN
-      END SUBROUTINE UPCGUPDPOLY
+      END SUBROUTINE PSOLUPDPOLY
 
 
       SUBROUTINE XMUL(P1, P2, P, NINTV, INTV, Q1, Q2, Q)
@@ -132,7 +132,7 @@ C     + + + CODE + + +
       END SUBROUTINE XMUL
 
       DOUBLEPRECISION FUNCTION DOTP(P1,P2,P,Q1,Q2,Q) RESULT(R)
-        USE UPCGMODULE, ONLY: PI, SCAL
+        USE PSOLMODULE, ONLY: PI, SCAL
         IMPLICIT NONE
 C     + + + DUMMY ARGUMENTS + + +
         INTEGER, INTENT(IN) :: P1

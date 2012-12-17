@@ -17,7 +17,7 @@ C1------USE package modules.
       USE SIPMODULE
       USE DE4MODULE
       USE GMGMODULE
-      USE UPCGMODULE
+      USE PSOLMODULE
       INCLUDE 'openspec.inc'
 C
 C-------ASSIGN VERSION NUMBER AND DATE
@@ -40,7 +40,7 @@ C
      &           'HYD ', 'SFR ', '    ', 'GAGE', 'LVDA', '    ', 'LMT6',  ! 49
      &           'MNW2', 'MNWI', 'MNW1', 'KDEP', 'SUB ', 'UZF ', 'gwm ',  ! 56
      &           'SWT ', 'cfp ', '    ', '    ', '    ', '    ', 'NWT ',  ! 63
-     &           '    ', '    ', 'UPCG', '    ', '    ', '    ', '    ',  ! 70  - UPCG - JDH 
+     &           '    ', '    ', 'PSOL', '    ', '    ', '    ', '    ',  ! 70  - PSOL - JDH 
      &           30*'    '/                                               ! 71 - 100
 C     ------------------------------------------------------------------
 C
@@ -124,7 +124,7 @@ C6------ALLOCATE AND READ (AR) PROCEDURE
      1                   CALL GWF2HYD7STR7AR(IUNIT(43),IGRID)
       IF(IUNIT(43).GT.0 .AND. IUNIT(44).GT.0)
      1                   CALL GWF2HYD7SFR7AR(IUNIT(43),IGRID)
-      IF(IUNIT(66).GT.0) CALL UPCG7AR(IUNIT(66),MXITER,IGRID)       !UPCG - JDH
+      IF(IUNIT(66).GT.0) CALL PSOL7AR(IUNIT(66),MXITER,IGRID)       !PSOL - JDH
 C
 C  Observation allocate and read
       CALL OBS2BAS7AR(IUNIT(28),IGRID)
@@ -325,24 +325,24 @@ C7C2B---MAKE ONE CUT AT AN APPROXIMATE SOLUTION.
      7                         IGMGO,IGMGI,GMGTOTT,GMGFMAT)
             ENDIF
             IF (IUNIT(66).GT.0) THEN
-                   CALL UPCG7PNT(IGRID)
-                   CALL UPCG7AP(HNEW,IBOUND,CR,CC,CV,HCOF,RHS,
+                   CALL PSOL7PNT(IGRID)
+                   CALL PSOL7AP(HNEW,IBOUND,CR,CC,CV,HCOF,RHS,
      1               ICNVG,KKSTP,KKPER,MXITER,KKITER,
      2               NCOL,NROW,NLAY,NODES,HNOFLO,IOUT,
-     3               NPC,NOPT,NTRD,NTRDV,ITER1C,NITERC,NNZC,NIAC,
+     3               NMETH,NPC,NOPT,NTRD,NTRDV,ITER1C,NITERC,NNZC,NIAC,
      4               NIAPC,NIWC,NPOL,NEIG,
-     5               HCLOSEUPCG,RCLOSEUPCG,
-     6               UPCGTOTT,UPCGFMAT,
-     7               UPCGPCUT,UPCGPCAT,UPCGDPT,UPCGMVT,
-     8               UPCGAXPYT,UPCGVVPT,UPCGMISCT,UPCGGPUTT,
-     9               IUPCGO,IUPCGI,
+     5               HCLOSEPSOL,RCLOSEPSOL,
+     6               PSOLTOTT,PSOLFMAT,
+     7               PSOLPCUT,PSOLPCAT,PSOLDPT,PSOLMVT,
+     8               PSOLAXPYT,PSOLVVPT,PSOLMISCT,PSOLGPUTT,
+     9               IPSOLO,IPSOLI,
      X               NODEC,BC,XC,AC,APC,IAC,JAC,IUC,IXMAP,IWC,
-     1               DC,ZC,PC,QC,ISCL,SCL,SCLI,GLSPOLY,
-     2               CU_HDL,CU_STAT,CU_DES,CU_JAC,CU_IAC,
-     3               CU_AC,CU_APC,CU_XC,
-     3               CU_DC,CU_ZC,CU_PC,CU_QC,
-     5               CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1,
-     6               PL_DC,PL_ZC)
+     1               DC,ZC,PC,QC,ISCL,SCL,SCLI,GLSPOLY) !,
+!     2               CU_HDL,CU_STAT,CU_DES,CU_JAC,CU_IAC,
+!     3               CU_AC,CU_APC,CU_XC,
+!     3               CU_DC,CU_ZC,CU_PC,CU_QC,
+!     5               CU_SCL,CU_SCLI,CU_V,CU_V0,CU_V1,
+!     6               PL_DC,PL_ZC)
             END IF
             IF(IERR.EQ.1) CALL USTOP(' ')
 C
@@ -506,8 +506,8 @@ C
 C-------OUTPUT RESULTS OF GMG TIMER
       IF (IUNIT(42).GT.0) CALL GMG7OT(IGRID)
 C
-C-------OUTPUT RESULTS OF UPCG TIMER
-      IF(IUNIT(66).GT.0) CALL UPCG7OT(IGRID)
+C-------OUTPUT RESULTS OF PSOL TIMER
+      IF(IUNIT(66).GT.0) CALL PSOL7OT(IGRID)
 C
 C9------CLOSE FILES AND DEALLOCATE MEMORY.  GWF2BAS7DA MUST BE CALLED
 C9------LAST BECAUSE IT DEALLOCATES IUNIT.
